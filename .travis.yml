@@ -25,7 +25,7 @@ git:
 #  - if [ $TRAVIS_OS_NAME = osx ]; then brew install gcc; fi
 
 script:
-  - julia -e 'Pkg.clone("https://github.com/davidanthoff/FileIO.jl.git"); Pkg.checkout("next"); Pkg.clone(pwd()); Pkg.build("CSVFiles"); Pkg.test("CSVFiles"; coverage=true)'
+  - julia -e 'Pkg.clone("https://github.com/davidanthoff/FileIO.jl.git"); Pkg.checkout("FileIO", "next"); Pkg.clone(pwd()); Pkg.build("CSVFiles"); Pkg.test("CSVFiles"; coverage=true)'
 after_success:
   # push coverage results to Codecov
   - julia -e 'cd(Pkg.dir("CSVFiles")); Pkg.add("Coverage"); using Coverage; Codecov.submit(Codecov.process_folder())'
