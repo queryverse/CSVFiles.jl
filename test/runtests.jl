@@ -23,7 +23,7 @@ csvf = load(joinpath(@__DIR__, "data.csv"))
 
 @test isiterable(csvf) == true
 
-df3 = DataFrame(a=@data([3, NA]), b=["df\\e", "something"])
+df3 = DataFrame(a=@data([3, NA]), b=["df\"e", "something"])
 
 output_filename2 = tempname() * ".csv"
 
