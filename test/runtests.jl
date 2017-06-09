@@ -13,11 +13,17 @@ df = load(joinpath(@__DIR__, "data.csv")) |> DataFrame
 
 output_filename = tempname() * ".csv"
 
-df |> save(output_filename)
+try
+    df |> save(output_filename)
 
-df2 = load(output_filename) |> DataFrame
+    df2 = load(output_filename) |> DataFrame
 
-@test df == df2
+    @test df == df2
+finally
+    gc()
+    rm(output_filename)
+end
+
 
 csvf = load(joinpath(@__DIR__, "data.csv"))
 
@@ -27,6 +33,10 @@ df3 = DataFrame(a=@data([3, NA]), b=["df\"e", "something"])
 
 output_filename2 = tempname() * ".csv"
 
-df3 |> save(output_filename2)
+try
+    df3 |> save(output_filename2)
+finally
+    rm(output_filename2)
+end
 
 end
