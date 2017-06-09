@@ -17,7 +17,7 @@ function _writevalue{T}(io::IO, value::DataValue{T}, delim, quote_char, escape_c
     if isnull(value)
         print(io, "NA")
     else
-        print(io, get(value))
+        _writevalue(io, get(value), delim, quote_char, escape_char)
     end
 end
 
