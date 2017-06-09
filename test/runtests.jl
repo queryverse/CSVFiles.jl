@@ -19,4 +19,14 @@ df2 = load(output_filename) |> DataFrame
 
 @test df == df2
 
+csvf = load(joinpath(@__DIR__, "data.csv"))
+
+@test isiterable(csvf) == true
+
+df3 = DataFrame(a=@data([3, NA]), b=["df\\e", "something"])
+
+output_filename2 = tempname() * ".csv"
+
+df3 |> save(output_filename2)
+
 end
