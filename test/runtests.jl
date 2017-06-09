@@ -11,7 +11,7 @@ df = load(joinpath(@__DIR__, "data.csv")) |> DataFrame
 @test df[:Age] == [34.,54.,23]
 @test df[:Children] == [2,1,0]
 
-output_filename = tempname()
+output_filename = tempname() * ".csv"
 
 df |> save(output_filename)
 
