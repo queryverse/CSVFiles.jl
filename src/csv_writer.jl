@@ -1,12 +1,17 @@
 function _writevalue(io::IO, value::String, delim, quote_char, escape_char)
-    print(io, quote_char)
-    for c in value
-        if c==quote_char
-            print(io, escape_char)
+    if isnull(quote_char)
+        print(io, value)
+    else
+        quote_char_unpacked = get(quote_char)
+        print(io, quote_char_unpacked)
+        for c in value
+            if c==quote_char_unpacked
+                print(io, escape_char)
+            end
+            print(io, c)
         end
-        print(io, c)
+        print(io, quote_char_unpacked)
     end
-    print(io, quote_char)
 end
 
 function _writevalue(io::IO, value, delim, quote_char, escape_char)
@@ -47,11 +52,17 @@ function save(f::FileIO.File{FileIO.format"CSV"}, data; delim=',', quote_char='"
     it = getiterator(data)
     colnames = IterableTables.column_names(it)
 
+    quote_char_internal = quote_char==nothing ? Nullable{Char}() : Nullable{Char}(quote_char)
+
     open(f.filename, "w") do io
         if header
-            join(io,["$(quote_char)" *replace(string(colname), quote_char, "$(escape_char)$(quote_char)") * "$(quote_char)" for colname in colnames],delim)
+            if isnull(quote_char_internal)
+                join(io,[string(colname) for colname in colnames],delim)
+            else
+                join(io,["$(quote_char)" *replace(string(colname), quote_char, "$(escape_char)$(quote_char)") * "$(quote_char)" for colname in colnames],delim)
+            end
             println(io)
         end
-        _writecsv(io, it, eltype(it), delim, quote_char, escape_char)
+        _writecsv(io, it, eltype(it), delim, quote_char_internal, escape_char)
     end    
 end
