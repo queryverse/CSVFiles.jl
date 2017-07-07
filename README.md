@@ -13,7 +13,7 @@ This package provides load and save support for CSV Files under the
 
 ## Installation
 
-Use Pkg.add("CSVFiles") in Julia to install ExcelReaders and its dependencies.
+Use Pkg.add("CSVFiles") in Julia to install CSVFiles and its dependencies.
 
 ## Usage
 
