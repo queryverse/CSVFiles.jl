@@ -13,7 +13,7 @@ This package provides load and save support for CSV Files under the
 
 ## Installation
 
-Use Pkg.add("CSVFiles") in Julia to install CSVFiles and its dependencies.
+Use ``Pkg.add("CSVFiles")`` in Julia to install CSVFiles and its dependencies.
 
 ## Usage
 
@@ -55,7 +55,6 @@ load(f::FileIO.File{FileIO.format"CSV"}, delim=','; <arguments>...)
 ````
 #### Arguments:
 
-* ``file``: either an IO object or file name string
 * ``delim``: the delimiter character
 * ``quotechar``: character used to quote strings, defaults to "
 * ``escapechar``: character used to escape quotechar in strings. (could be the same as quotechar)
