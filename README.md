@@ -48,6 +48,9 @@ ts = TS(load("data.csv"))
 plot(load("data.csv"), x=:a, y=:b, Geom.line)
 ````
 
+One can load both local files and files that can be downloaded via either http or https. To download
+from a remote URL, simply pass a URL to the ``load`` function instead of just a filename.
+
 The ``load`` function also takes a number of parameters:
 
 ````julia
