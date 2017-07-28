@@ -1,5 +1,6 @@
 # CSVFiles.jl v0.2.0
 * Add support for http and https downloads via a URL
+* Remove DataTables.jl dependency
 
 # CSVFiles.jl v0.1.0
 * Add support for omitting the quote_char in csv writing operations
