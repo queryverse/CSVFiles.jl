@@ -2,6 +2,7 @@ module CSVFiles
 
 using TextParse, IterableTables, DataValues, DataTables
 import FileIO
+using HTTP
 
 struct CSVFile
     filename::String
@@ -17,7 +18,13 @@ IterableTables.isiterable(x::CSVFile) = true
 IterableTables.isiterabletable(x::CSVFile) = true
 
 function IterableTables.getiterator(file::CSVFile)
-    res = csvread(file.filename, file.delim; file.keywords...)
+    if startswith(file.filename, "https://") || startswith(file.filename, "http://")
+        response = HTTP.get(file.filename)
+        data = String(take!(response))
+        res = TextParse._csvread(data, file.delim, file.keywords...)
+    else
+        res = csvread(file.filename, file.delim; file.keywords...)
+    end
 
     dt = DataTable([i for i in res[1]], [Symbol(i) for i in res[2]])
 
