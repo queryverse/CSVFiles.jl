@@ -39,7 +39,7 @@ finally
     rm(output_filename2)
 end
 
-df = load("https://raw.githubusercontent.com/davidanthoff/CSVFiles.jl/master/test/data.csv") |> DataFrame
+df = load("https://raw.githubusercontent.com/davidanthoff/CSVFiles.jl/v0.2.0/test/data.csv") |> DataFrame
 @test size(df) == (3,3)
 @test df[:Name] == ["John", "Sally", "Jim"]
 @test df[:Age] == [34.,54.,23]
