@@ -1,6 +1,6 @@
 module CSVFiles
 
-using TextParse, IterableTables, DataValues, DataTables
+using TextParse, IterableTables, DataValues
 import FileIO
 using HTTP
 
@@ -26,9 +26,7 @@ function IterableTables.getiterator(file::CSVFile)
         res = csvread(file.filename, file.delim; file.keywords...)
     end
 
-    dt = DataTable([i for i in res[1]], [Symbol(i) for i in res[2]])
-
-    it = getiterator(dt)
+    it = IterableTables.create_tableiterator([i for i in res[1]], [Symbol(i) for i in res[2]])
 
     return it
 end
