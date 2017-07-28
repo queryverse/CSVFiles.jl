@@ -1,3 +1,6 @@
+# CSVFiles.jl v0.2.0
+* Add support for http and https downloads via a URL
+
 # CSVFiles.jl v0.1.0
 * Add support for omitting the quote_char in csv writing operations
 * Rename quote_char to quotechar for CSV write
