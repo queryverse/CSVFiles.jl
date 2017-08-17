@@ -1,4 +1,5 @@
 using FileIO
+using TableTraits
 using IterableTables
 using DataFrames
 using Base.Test

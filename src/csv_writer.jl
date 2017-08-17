@@ -50,7 +50,7 @@ function save(f::FileIO.File{FileIO.format"CSV"}, data; delim=',', quotechar='"'
     isiterabletable(data) || error("Can't write this data to a CSV file.")
 
     it = getiterator(data)
-    colnames = IterableTables.column_names(it)
+    colnames = TableTraits.column_names(it)
 
     quotechar_internal = quotechar==nothing ? Nullable{Char}() : Nullable{Char}(quotechar)
 

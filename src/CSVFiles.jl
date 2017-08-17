@@ -1,6 +1,6 @@
 module CSVFiles
 
-using TextParse, IterableTables, DataValues
+using TextParse, TableTraits, TableTraitsImplementationHelpers, DataValues
 import FileIO
 using HTTP
 
@@ -14,10 +14,10 @@ function load(f::FileIO.File{FileIO.format"CSV"}, delim=','; args...)
     return CSVFile(f.filename, delim, args)
 end
 
-IterableTables.isiterable(x::CSVFile) = true
-IterableTables.isiterabletable(x::CSVFile) = true
+TableTraits.isiterable(x::CSVFile) = true
+TableTraits.isiterabletable(x::CSVFile) = true
 
-function IterableTables.getiterator(file::CSVFile)
+function TableTraits.getiterator(file::CSVFile)
     if startswith(file.filename, "https://") || startswith(file.filename, "http://")
         response = HTTP.get(file.filename)
         data = String(take!(response))
@@ -26,7 +26,7 @@ function IterableTables.getiterator(file::CSVFile)
         res = csvread(file.filename, file.delim; file.keywords...)
     end
 
-    it = IterableTables.create_tableiterator([i for i in res[1]], [Symbol(i) for i in res[2]])
+    it = TableTraitsImplementationHelpers.create_tableiterator([i for i in res[1]], [Symbol(i) for i in res[2]])
 
     return it
 end
