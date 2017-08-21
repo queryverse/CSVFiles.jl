@@ -1,6 +1,6 @@
 module CSVFiles
 
-using TextParse, TableTraits, TableTraitsImplementationHelpers, DataValues
+using TextParse, TableTraits, TableTraitsUtils, DataValues
 import FileIO
 using HTTP
 
@@ -26,7 +26,7 @@ function TableTraits.getiterator(file::CSVFile)
         res = csvread(file.filename, file.delim; file.keywords...)
     end
 
-    it = TableTraitsImplementationHelpers.create_tableiterator([i for i in res[1]], [Symbol(i) for i in res[2]])
+    it = TableTraitsUtils.create_tableiterator([i for i in res[1]], [Symbol(i) for i in res[2]])
 
     return it
 end
