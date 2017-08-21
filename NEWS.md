@@ -1,3 +1,6 @@
+# CSVFiles.jl v0.3.0
+* Move to TableTraits.jl
+
 # CSVFiles.jl v0.2.0
 * Add support for http and https downloads via a URL
 * Remove DataTables.jl dependency
