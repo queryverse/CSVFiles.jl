@@ -3,6 +3,7 @@ module CSVFiles
 using TextParse, TableTraits, TableTraitsUtils, DataValues
 import FileIO
 using HTTP
+import IterableTables
 
 struct CSVFile
     filename::String
