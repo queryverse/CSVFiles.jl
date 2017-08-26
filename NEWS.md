@@ -1,3 +1,6 @@
+# CSVFiles.jl v0.3.1
+* Add dependency on IterableTables.jl back into the package
+
 # CSVFiles.jl v0.3.0
 * Move to TableTraits.jl
 
