@@ -46,7 +46,7 @@ end
     end
 end
 
-function save(f::FileIO.File{FileIO.format"CSV"}, data; delim=',', quotechar='"', escapechar='\\', header=true)
+function _save(filename, data; delim=',', quotechar='"', escapechar='\\', header=true)
     isiterabletable(data) || error("Can't write this data to a CSV file.")
 
     it = getiterator(data)
@@ -54,7 +54,7 @@ function save(f::FileIO.File{FileIO.format"CSV"}, data; delim=',', quotechar='"'
 
     quotechar_internal = quotechar==nothing ? Nullable{Char}() : Nullable{Char}(quotechar)
 
-    open(f.filename, "w") do io
+    open(filename, "w") do io
         if header
             if isnull(quotechar_internal)
                 join(io,[string(colname) for colname in colnames],delim)
@@ -65,4 +65,16 @@ function save(f::FileIO.File{FileIO.format"CSV"}, data; delim=',', quotechar='"'
         end
         _writecsv(io, it, eltype(it), delim, quotechar_internal, escapechar)
     end    
+end
+
+function save(f::FileIO.File{FileIO.format"CSV"}, data; delim=',', quotechar='"', escapechar='\\', header=true)
+    return _save(f.filename, data, delim=delim, quotechar=quotechar, escapechar=escapechar, header=header)
+end
+
+function save(f::FileIO.File{FileIO.format"TSV"}, data; delim='\t', quotechar='"', escapechar='\\', header=true)
+    return _save(f.filename, data, delim=delim, quotechar=quotechar, escapechar=escapechar, header=header)
+end
+
+function save(f::FileIO.File{FileIO.format"WSV"}, data; delim=' ', quotechar='"', escapechar='\\', header=true)
+    return _save(f.filename, data, delim=delim, quotechar=quotechar, escapechar=escapechar, header=header)
 end
