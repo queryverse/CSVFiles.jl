@@ -38,19 +38,6 @@ finally
     rm(output_filename)
 end
 
-output_filename = tempname() * ".wsv"
-
-try
-    df |> save(output_filename)
-
-    df2 = load(output_filename) |> DataFrame
-
-    @test df == df2
-finally
-    gc()
-    rm(output_filename)
-end
-
 csvf = load(joinpath(@__DIR__, "data.csv"))
 
 @test isiterable(csvf) == true

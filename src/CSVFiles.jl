@@ -19,10 +19,6 @@ function load(f::FileIO.File{FileIO.format"TSV"}, delim='\t'; args...)
     return CSVFile(f.filename, delim, args)
 end
 
-function load(f::FileIO.File{FileIO.format"WSV"}, delim=' '; args...)
-    return CSVFile(f.filename, delim, args)
-end
-
 TableTraits.isiterable(x::CSVFile) = true
 TableTraits.isiterabletable(x::CSVFile) = true
 

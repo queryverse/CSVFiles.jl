@@ -74,7 +74,3 @@ end
 function save(f::FileIO.File{FileIO.format"TSV"}, data; delim='\t', quotechar='"', escapechar='\\', header=true)
     return _save(f.filename, data, delim=delim, quotechar=quotechar, escapechar=escapechar, header=header)
 end
-
-function save(f::FileIO.File{FileIO.format"WSV"}, data; delim=' ', quotechar='"', escapechar='\\', header=true)
-    return _save(f.filename, data, delim=delim, quotechar=quotechar, escapechar=escapechar, header=header)
-end
