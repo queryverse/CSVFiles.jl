@@ -1,3 +1,6 @@
+# CSVFiles.jl v0.4.0
+* Add support for tsv files
+
 # CSVFiles.jl v0.3.1
 * Add dependency on IterableTables.jl back into the package
 
