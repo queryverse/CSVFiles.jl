@@ -1,6 +1,6 @@
 module CSVFiles
 
-using TextParse, TableTraits, TableTraitsUtils, DataValues
+using TextParse, TableTraits, TableTraitsUtils, DataValues, NamedTuples
 import FileIO
 using HTTP
 import IterableTables
@@ -21,19 +21,32 @@ end
 
 TableTraits.isiterable(x::CSVFile) = true
 TableTraits.isiterabletable(x::CSVFile) = true
+TableTraits.supports_get_columns_copy(x::CSVFile) = true
 
-function TableTraits.getiterator(file::CSVFile)
+function _loaddata(file)
     if startswith(file.filename, "https://") || startswith(file.filename, "http://")
         response = HTTP.get(file.filename)
         data = String(take!(response))
-        res = TextParse._csvread(data, file.delim, file.keywords...)
+        return TextParse._csvread(data, file.delim, file.keywords...)
     else
-        res = csvread(file.filename, file.delim; file.keywords...)
+        return csvread(file.filename, file.delim; file.keywords...)
     end
+end
+
+function TableTraits.getiterator(file::CSVFile)
+    res = _loaddata(file)
 
     it = TableTraitsUtils.create_tableiterator([i for i in res[1]], [Symbol(i) for i in res[2]])
 
     return it
+end
+
+function TableTraits.get_columns_copy(file::CSVFile)
+    columns, colnames = _loaddata(file)
+
+    T = eval(:(@NT($(Symbol.(colnames)...)))){typeof.(columns)...}
+
+    return T(columns...)   
 end
 
 include("csv_writer.jl")
