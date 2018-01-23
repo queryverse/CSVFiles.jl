@@ -1,6 +1,7 @@
 using FileIO
 using TableTraits
 using IterableTables
+using NamedTuples
 using DataFrames
 using Base.Test
 
@@ -57,5 +58,10 @@ df = load("https://raw.githubusercontent.com/davidanthoff/CSVFiles.jl/v0.2.0/tes
 @test df[:Name] == ["John", "Sally", "Jim"]
 @test df[:Age] == [34.,54.,23]
 @test df[:Children] == [2,1,0]
+
+f = load(joinpath(@__DIR__, "data.csv"))
+@test TableTraits.supports_get_columns_copy(f) == true
+data = TableTraits.get_columns_copy(f)
+@test data == @NT(Name=["John", "Sally", "Jim"], Age=[34.,54.,23.], Children=[2,1,0])
 
 end
