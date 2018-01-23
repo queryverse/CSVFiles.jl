@@ -59,6 +59,7 @@ load(f::FileIO.File{FileIO.format"CSV"}, delim=','; <arguments>...)
 #### Arguments:
 
 * ``delim``: the delimiter character
+* ``spacedelim``: a ``Bool`` indicating whether columns are space delimited. If ``true``, the value of ``delim`` is ignored
 * ``quotechar``: character used to quote strings, defaults to "
 * ``escapechar``: character used to escape quotechar in strings. (could be the same as quotechar)
 * ``nrows``: number of rows in the file. Defaults to 0 in which case we try to estimate this.
