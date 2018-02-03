@@ -1,38 +1,24 @@
 using FileIO
+using CSVFiles
 using TableTraits
-using IterableTables
-using DataFrames
+using NamedTuples
+using DataValues
 using Base.Test
 
 @testset "CSVFiles" begin
 
-df = load(joinpath(@__DIR__, "data.csv")) |> DataFrame
-@test size(df) == (3,3)
-@test df[:Name] == ["John", "Sally", "Jim"]
-@test df[:Age] == [34.,54.,23]
-@test df[:Children] == [2,1,0]
+array = collect(load(joinpath(@__DIR__, "data.csv")))
+@test length(array) == 3
+@test array == [@NT(Name="John",Age=34.,Children=2),@NT(Name="Sally",Age=54.,Children=1),@NT(Name="Jim",Age=23.,Children=0)]
 
 output_filename = tempname() * ".csv"
 
 try
-    df |> save(output_filename)
+    array |> save(output_filename)
 
-    df2 = load(output_filename) |> DataFrame
+    array2 = collect(load(output_filename))
 
-    @test df == df2
-finally
-    gc()
-    rm(output_filename)
-end
-
-output_filename = tempname() * ".tsv"
-
-try
-    df |> save(output_filename)
-
-    df2 = load(output_filename) |> DataFrame
-
-    @test df == df2
+    @test array == array2
 finally
     gc()
     rm(output_filename)
@@ -42,20 +28,18 @@ csvf = load(joinpath(@__DIR__, "data.csv"))
 
 @test isiterable(csvf) == true
 
-df3 = DataFrame(a=@data([3, NA]), b=["df\"e", "something"])
+array3 = [@NT(a=DataValue(3),b="df\"e"),@NT(a=DataValue{Int}(),b="something")]
 
 output_filename2 = tempname() * ".csv"
 
 try
-    df3 |> save(output_filename2)
+    array3 |> save(output_filename2)
 finally
     rm(output_filename2)
 end
 
-df = load("https://raw.githubusercontent.com/davidanthoff/CSVFiles.jl/v0.2.0/test/data.csv") |> DataFrame
-@test size(df) == (3,3)
-@test df[:Name] == ["John", "Sally", "Jim"]
-@test df[:Age] == [34.,54.,23]
-@test df[:Children] == [2,1,0]
+array = collect(load("https://raw.githubusercontent.com/davidanthoff/CSVFiles.jl/v0.2.0/test/data.csv"))
+@test length(array) == 3
+@test array == [@NT(Name="John",Age=34.,Children=2),@NT(Name="Sally",Age=54.,Children=1),@NT(Name="Jim",Age=23.,Children=0)]
 
 end
