@@ -5,7 +5,7 @@ function _writevalue(io::IO, value::String, delim, quotechar, escapechar)
         quotechar_unpacked = get(quotechar)
         print(io, quotechar_unpacked)
         for c in value
-            if c==quotechar_unpacked
+            if c==quotechar_unpacked || c==escapechar
                 print(io, escapechar)
             end
             print(io, c)
