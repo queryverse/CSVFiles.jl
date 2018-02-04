@@ -1,3 +1,6 @@
+# CSVFiles.jl v0.4.1
+* Various small bug fixes
+
 # CSVFiles.jl v0.4.0
 * Add support for tsv files
 
