@@ -1,6 +1,7 @@
 module CSVFiles
 
-using TextParse, TableTraits, TableTraitsUtils, DataValues
+using TextParse, IteratorInterfaceExtensions, TableTraits, TableTraitsUtils,
+    DataValues
 import FileIO
 using HTTP
 import IterableTables
@@ -33,10 +34,10 @@ function load(s::FileIO.Stream{FileIO.format"TSV"}, delim='\t'; args...)
     return CSVStream(s.io, delim, args)
 end
 
-TableTraits.isiterable(x::CSVFile) = true
+IteratorInterfaceExtensions.isiterable(x::CSVFile) = true
 TableTraits.isiterabletable(x::CSVFile) = true
 
-TableTraits.isiterable(x::CSVStream) = true
+IteratorInterfaceExtensions.isiterable(x::CSVStream) = true
 TableTraits.isiterabletable(x::CSVStream) = true
 
 function TableTraits.getiterator(file::CSVFile)
