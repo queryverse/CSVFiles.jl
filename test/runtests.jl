@@ -73,7 +73,10 @@ mark(stream)
 fileiostream = FileIO.Stream(format"CSV", stream)
 save(fileiostream, data)
 reset(stream)
-reloaded_data = collect(load(fileiostream))
+csvstream = load(fileiostream)
+reloaded_data = collect(csvstream)
+@test isiterable(csvstream)
+@test isiterabletable(csvstream)
 @test reloaded_data == data
 
 stream = IOBuffer()
@@ -81,7 +84,10 @@ mark(stream)
 fileiostream = FileIO.Stream(format"TSV", stream)
 save(fileiostream, data)
 reset(stream)
-reloaded_data = collect(load(fileiostream))
+csvstream = load(fileiostream)
+reloaded_data = collect(csvstream)
+@test isiterable(csvstream)
+@test isiterabletable(csvstream)
 @test reloaded_data == data
 
 end
