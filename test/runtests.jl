@@ -66,5 +66,23 @@ finally
     rm(output_filename4)
 end
 
+data = [@NT(Name="John",Age=34.,Children=2),@NT(Name="Sally",Age=54.,Children=1),@NT(Name="Jim",Age=23.,Children=0)]
+
+stream = IOBuffer()
+mark(stream)
+fileiostream = FileIO.Stream(format"CSV", stream)
+save(fileiostream, data)
+reset(stream)
+reloaded_data = collect(load(fileiostream))
+@test reloaded_data == data
+
+stream = IOBuffer()
+mark(stream)
+fileiostream = FileIO.Stream(format"TSV", stream)
+save(fileiostream, data)
+reset(stream)
+reloaded_data = collect(load(fileiostream))
+@test reloaded_data == data
 
 end
+

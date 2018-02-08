@@ -49,7 +49,13 @@ plot(load("data.csv"), x=:a, y=:b, Geom.line)
 ````
 
 One can load both local files and files that can be downloaded via either http or https. To download
-from a remote URL, simply pass a URL to the ``load`` function instead of just a filename.
+from a remote URL, simply pass a URL to the ``load`` function instead of just a filename. In addition
+one can also load data from an ``IO`` object, i.e. any stream. The syntax
+that scenario is
+
+````julia
+df = DataFrame(load(Stream(format"CSV", io)))
+````
 
 The ``load`` function also takes a number of parameters:
 
@@ -79,6 +85,13 @@ using FileIO, CSVFiles
 save("output.csv", it)
 ````
 This will work as long as ``it`` is any of the types supported as sources in [IterableTables.jl](https://github.com/davidanthoff/IterableTables.jl).
+
+One can also save into an arbitrary stream:
+````julia
+using FileIO, CSVFiles
+
+save(Stream(format"CSV", io), it)
+````
 
 The ``save`` function takes a number of arguments:
 ````julia

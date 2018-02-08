@@ -11,6 +11,12 @@ struct CSVFile
     keywords
 end
 
+struct CSVStream
+    io
+    delim
+    keywords
+end
+
 function load(f::FileIO.File{FileIO.format"CSV"}, delim=','; args...)
     return CSVFile(f.filename, delim, args)
 end
@@ -19,8 +25,19 @@ function load(f::FileIO.File{FileIO.format"TSV"}, delim='\t'; args...)
     return CSVFile(f.filename, delim, args)
 end
 
+function load(s::FileIO.Stream{FileIO.format"CSV"}, delim=','; args...)
+    return CSVStream(s.io, delim, args)
+end
+
+function load(s::FileIO.Stream{FileIO.format"TSV"}, delim='\t'; args...)
+    return CSVStream(s.io, delim, args)
+end
+
 TableTraits.isiterable(x::CSVFile) = true
 TableTraits.isiterabletable(x::CSVFile) = true
+
+TableTraits.isiterable(x::CSVStream) = true
+TableTraits.isiterabletable(x::CSVStream) = true
 
 function TableTraits.getiterator(file::CSVFile)
     if startswith(file.filename, "https://") || startswith(file.filename, "http://")
@@ -36,7 +53,19 @@ function TableTraits.getiterator(file::CSVFile)
     return it
 end
 
+function TableTraits.getiterator(s::CSVStream)
+    res = TextParse.csvread(s.io, s.delim, s.keywords...)
+
+    it = TableTraitsUtils.create_tableiterator([i for i in res[1]], [Symbol(i) for i in res[2]])
+
+    return it
+end
+
 function Base.collect(x::CSVFile)
+    return collect(getiterator(x))
+end
+
+function Base.collect(x::CSVStream)
     return collect(getiterator(x))
 end
 

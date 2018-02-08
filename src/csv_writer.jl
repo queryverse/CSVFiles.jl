@@ -46,7 +46,7 @@ end
     end
 end
 
-function _save(filename, data; delim=',', quotechar='"', escapechar='\\', header=true)
+function _save(io, data; delim=',', quotechar='"', escapechar='\\', header=true)
     isiterabletable(data) || error("Can't write this data to a CSV file.")
 
     it = getiterator(data)
@@ -54,17 +54,23 @@ function _save(filename, data; delim=',', quotechar='"', escapechar='\\', header
 
     quotechar_internal = quotechar==nothing ? Nullable{Char}() : Nullable{Char}(quotechar)
 
-    open(filename, "w") do io
-        if header
-            if isnull(quotechar_internal)
-                join(io,[string(colname) for colname in colnames],delim)
-            else
-                join(io,["$(quotechar)" *replace(string(colname), quotechar, "$(escapechar)$(quotechar)") * "$(quotechar)" for colname in colnames],delim)
-            end
-            println(io)
+    if header
+        if isnull(quotechar_internal)
+            join(io,[string(colname) for colname in colnames],delim)
+        else
+            join(io,["$(quotechar)" *replace(string(colname), quotechar, "$(escapechar)$(quotechar)") * "$(quotechar)" for colname in colnames],delim)
         end
-        _writecsv(io, it, eltype(it), delim, quotechar_internal, escapechar)
-    end    
+        println(io)
+    end
+    _writecsv(io, it, eltype(it), delim, quotechar_internal, escapechar)
+end
+
+function _save(filename::AbstractString, data; delim=',', quotechar='"', escapechar='\\', header=true)
+    isiterabletable(data) || error("Can't write this data to a CSV file.")
+
+    open(filename, "w") do io
+        _save(io, data, delim=delim, quotechar=quotechar, escapechar=escapechar, header=header)
+    end
 end
 
 function save(f::FileIO.File{FileIO.format"CSV"}, data; delim=',', quotechar='"', escapechar='\\', header=true)
@@ -73,4 +79,12 @@ end
 
 function save(f::FileIO.File{FileIO.format"TSV"}, data; delim='\t', quotechar='"', escapechar='\\', header=true)
     return _save(f.filename, data, delim=delim, quotechar=quotechar, escapechar=escapechar, header=header)
+end
+
+function save(s::FileIO.Stream{FileIO.format"CSV"}, data; delim=',', quotechar='"', escapechar='\\', header=true)
+    return _save(s.io, data, delim=delim, quotechar=quotechar, escapechar=escapechar, header=header)
+end
+
+function save(s::FileIO.Stream{FileIO.format"TSV"}, data; delim='\t', quotechar='"', escapechar='\\', header=true)
+    return _save(s.io, data, delim=delim, quotechar=quotechar, escapechar=escapechar, header=header)
 end
