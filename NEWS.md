@@ -1,3 +1,6 @@
+# CSVFiles.jl v0.5.1
+* Samll bug fixes
+
 # CSVFiles.jl v0.5.0
 * Support for FileIO Stream objects
 
