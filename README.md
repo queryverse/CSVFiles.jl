@@ -69,6 +69,7 @@ load(f::FileIO.File{FileIO.format"CSV"}, delim=','; <arguments>...)
 * ``quotechar``: character used to quote strings, defaults to "
 * ``escapechar``: character used to escape quotechar in strings. (could be the same as quotechar)
 * ``nrows``: number of rows in the file. Defaults to 0 in which case we try to estimate this.
+* ``skiplines_begin``: number of rows to skip at the beginning of the file.
 * ``header_exists``: boolean specifying whether CSV file contains a header
 * ``colnames``: manually specified column names. Could be a vector or a dictionary from Int index (the column) to String column name.
 * ``colparsers``: Parsers to use for specified columns. This can be a vector or a dictionary from column name / column index (Int) to a "parser". The simplest parser is a type such as Int, Float64. It can also be a dateformat"...", see CustomParser if you want to plug in custom parsing behavior
