@@ -1,3 +1,6 @@
+# CSVFiles.jl v0.6.0
+* Export load and save from FileIO
+
 # CSVFiles.jl v0.5.1
 * Samll bug fixes
 
