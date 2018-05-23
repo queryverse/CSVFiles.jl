@@ -1,10 +1,10 @@
 module CSVFiles
 
 using TextParse, IteratorInterfaceExtensions, TableTraits, TableTraitsUtils,
-    DataValues
-import FileIO
-using HTTP
+    DataValues, FileIO, HTTP
 import IterableTables
+
+export load, save
 
 struct CSVFile
     filename::String
@@ -18,19 +18,19 @@ struct CSVStream
     keywords
 end
 
-function load(f::FileIO.File{FileIO.format"CSV"}, delim=','; args...)
+function fileio_load(f::FileIO.File{FileIO.format"CSV"}, delim=','; args...)
     return CSVFile(f.filename, delim, args)
 end
 
-function load(f::FileIO.File{FileIO.format"TSV"}, delim='\t'; args...)
+function fileio_load(f::FileIO.File{FileIO.format"TSV"}, delim='\t'; args...)
     return CSVFile(f.filename, delim, args)
 end
 
-function load(s::FileIO.Stream{FileIO.format"CSV"}, delim=','; args...)
+function fileio_load(s::FileIO.Stream{FileIO.format"CSV"}, delim=','; args...)
     return CSVStream(s.io, delim, args)
 end
 
-function load(s::FileIO.Stream{FileIO.format"TSV"}, delim='\t'; args...)
+function fileio_load(s::FileIO.Stream{FileIO.format"TSV"}, delim='\t'; args...)
     return CSVStream(s.io, delim, args)
 end
 

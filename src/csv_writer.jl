@@ -73,18 +73,18 @@ function _save(filename::AbstractString, data; delim=',', quotechar='"', escapec
     end
 end
 
-function save(f::FileIO.File{FileIO.format"CSV"}, data; delim=',', quotechar='"', escapechar='\\', header=true)
+function fileio_save(f::FileIO.File{FileIO.format"CSV"}, data; delim=',', quotechar='"', escapechar='\\', header=true)
     return _save(f.filename, data, delim=delim, quotechar=quotechar, escapechar=escapechar, header=header)
 end
 
-function save(f::FileIO.File{FileIO.format"TSV"}, data; delim='\t', quotechar='"', escapechar='\\', header=true)
+function fileio_save(f::FileIO.File{FileIO.format"TSV"}, data; delim='\t', quotechar='"', escapechar='\\', header=true)
     return _save(f.filename, data, delim=delim, quotechar=quotechar, escapechar=escapechar, header=header)
 end
 
-function save(s::FileIO.Stream{FileIO.format"CSV"}, data; delim=',', quotechar='"', escapechar='\\', header=true)
+function fileio_save(s::FileIO.Stream{FileIO.format"CSV"}, data; delim=',', quotechar='"', escapechar='\\', header=true)
     return _save(s.io, data, delim=delim, quotechar=quotechar, escapechar=escapechar, header=header)
 end
 
-function save(s::FileIO.Stream{FileIO.format"TSV"}, data; delim='\t', quotechar='"', escapechar='\\', header=true)
+function fileio_save(s::FileIO.Stream{FileIO.format"TSV"}, data; delim='\t', quotechar='"', escapechar='\\', header=true)
     return _save(s.io, data, delim=delim, quotechar=quotechar, escapechar=escapechar, header=header)
 end
