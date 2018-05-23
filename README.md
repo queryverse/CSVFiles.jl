@@ -22,7 +22,7 @@ Use ``Pkg.add("CSVFiles")`` in Julia to install CSVFiles and its dependencies.
 To read a CSV file into a ``DataFrame``, use the following julia code:
 
 ````julia
-using FileIO, CSVFiles, DataFrames
+using CSVFiles, DataFrames
 
 df = DataFrame(load("data.csv"))
 ````
@@ -30,7 +30,7 @@ df = DataFrame(load("data.csv"))
 The call to ``load`` returns a ``struct`` that is an [IterableTable.jl](https://github.com/davidanthoff/IterableTables.jl), so it can be passed to any function that can handle iterable tables, i.e. all the sinks in [IterableTable.jl](https://github.com/davidanthoff/IterableTables.jl). Here are some examples of materializing a CSV file into data structures that are not a ``DataFrame``:
 
 ````julia
-using FileIO, CSVFiles, DataTables, IndexedTables, TimeSeries, Temporal, Gadfly
+using CSVFiles, DataTables, IndexedTables, TimeSeries, Temporal, Gadfly
 
 # Load into a DataTable
 dt = DataTable(load("data.csv"))
@@ -81,7 +81,7 @@ These are simply the arguments from [TextParse.jl](https://github.com/JuliaCompu
 
 The following code saves any iterable table as a CSV file:
 ````julia
-using FileIO, CSVFiles
+using CSVFiles
 
 save("output.csv", it)
 ````
@@ -89,7 +89,7 @@ This will work as long as ``it`` is any of the types supported as sources in [It
 
 One can also save into an arbitrary stream:
 ````julia
-using FileIO, CSVFiles
+using CSVFiles
 
 save(Stream(format"CSV", io), it)
 ````
@@ -111,7 +111,7 @@ save(f::FileIO.File{FileIO.format"CSV"}, data; delim=',', quotechar='"', escapec
 Both ``load`` and ``save`` also support the pipe syntax. For example, to load a CSV file into a ``DataFrame``, one can use the following code:
 
 ````julia
-using FileIO, CSVFiles, DataFrame
+using CSVFiles, DataFrame
 
 df = load("data.csv") |> DataFrame
 ````
@@ -119,7 +119,7 @@ df = load("data.csv") |> DataFrame
 To save an iterable table, one can use the following form:
 
 ````julia
-using FileIO, CSVFiles, DataFrame
+using CSVFiles, DataFrame
 
 df = # Aquire a DataFrame somehow
 

@@ -1,6 +1,4 @@
-using FileIO
 using CSVFiles
-using TableTraits
 using NamedTuples
 using DataValues
 using Base.Test
@@ -26,7 +24,7 @@ end
 
 csvf = load(joinpath(@__DIR__, "data.csv"))
 
-@test isiterable(csvf) == true
+@test IteratorInterfaceExtensions.isiterable(csvf) == true
 @test TableTraits.isiterabletable(csvf) == true
 
 array3 = [@NT(a=DataValue(3),b="df\"e"),@NT(a=DataValue{Int}(),b="something")]
@@ -70,24 +68,24 @@ data = [@NT(Name="John",Age=34.,Children=2),@NT(Name="Sally",Age=54.,Children=1)
 
 stream = IOBuffer()
 mark(stream)
-fileiostream = FileIO.Stream(format"CSV", stream)
+fileiostream = FileIO.Stream(FileIO.format"CSV", stream)
 save(fileiostream, data)
 reset(stream)
 csvstream = load(fileiostream)
 reloaded_data = collect(csvstream)
-@test isiterable(csvstream)
-@test isiterabletable(csvstream)
+@test IteratorInterfaceExtensions.isiterable(csvstream)
+@test TableTraits.isiterabletable(csvstream)
 @test reloaded_data == data
 
 stream = IOBuffer()
 mark(stream)
-fileiostream = FileIO.Stream(format"TSV", stream)
+fileiostream = FileIO.Stream(FileIO.format"TSV", stream)
 save(fileiostream, data)
 reset(stream)
 csvstream = load(fileiostream)
 reloaded_data = collect(csvstream)
-@test isiterable(csvstream)
-@test isiterabletable(csvstream)
+@test IteratorInterfaceExtensions.isiterable(csvstream)
+@test TableTraits.isiterabletable(csvstream)
 @test reloaded_data == data
 
 end
