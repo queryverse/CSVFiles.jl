@@ -1,7 +1,7 @@
 module CSVFiles
 
 using TextParse, IteratorInterfaceExtensions, TableTraits, TableTraitsUtils,
-    DataValues, FileIO, HTTP
+    DataValues, FileIO, HTTP, TableShowUtils
 import IterableTables
 
 export load, save
@@ -17,6 +17,26 @@ struct CSVStream
     delim
     keywords
 end
+
+function Base.show(io::IO, source::CSVFile)
+    TableShowUtils.printtable(io, getiterator(source), "CSV file")
+end
+
+function Base.show(io::IO, ::MIME"text/html", source::CSVFile)
+    TableShowUtils.printHTMLtable(io, getiterator(source))
+end
+
+Base.Multimedia.mimewritable(::MIME"text/html", source::CSVFile) = true
+
+function Base.show(io::IO, source::CSVStream)
+    TableShowUtils.printtable(io, getiterator(source), "CSV file")
+end
+
+function Base.show(io::IO, ::MIME"text/html", source::CSVStream)
+    TableShowUtils.printHTMLtable(io, getiterator(source))
+end
+
+Base.Multimedia.mimewritable(::MIME"text/html", source::CSVStream) = true
 
 function fileio_load(f::FileIO.File{FileIO.format"CSV"}, delim=','; args...)
     return CSVFile(f.filename, delim, args)
