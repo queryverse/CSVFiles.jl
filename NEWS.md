@@ -1,3 +1,6 @@
+# CSVFiles.jl v0.7.0
+* Add show method
+
 # CSVFiles.jl v0.6.0
 * Export load and save from FileIO
 
