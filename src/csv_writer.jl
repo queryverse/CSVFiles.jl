@@ -1,4 +1,4 @@
-function _writevalue(io::IO, value::String, delim, quotechar, escapechar)
+function _writevalue(io::IO, value::String, delim, quotechar, escapechar, missingstring)
     if isnull(quotechar)
         print(io, value)
     else
@@ -14,25 +14,25 @@ function _writevalue(io::IO, value::String, delim, quotechar, escapechar)
     end
 end
 
-function _writevalue(io::IO, value, delim, quotechar, escapechar)
+function _writevalue(io::IO, value, delim, quotechar, escapechar, missingstring)
     print(io, value)
 end
 
-function _writevalue{T}(io::IO, value::DataValue{T}, delim, quotechar, escapechar)
+function _writevalue{T}(io::IO, value::DataValue{T}, delim, quotechar, escapechar, missingstring)
     if isnull(value)
-        print(io, "NA")
+        print(io, missingstring)
     else
-        _writevalue(io, get(value), delim, quotechar, escapechar)
+        _writevalue(io, get(value), delim, quotechar, escapechar, missingstring)
     end
 end
 
 
-@generated function _writecsv{T}(io::IO, it, ::Type{T}, delim, quotechar, escapechar)
+@generated function _writecsv{T}(io::IO, it, ::Type{T}, delim, quotechar, escapechar, missingstring)
     col_names = fieldnames(T)
     n = length(col_names)
     push_exprs = Expr(:block)
     for i in 1:n
-        push!(push_exprs.args, :( _writevalue(io, i.$(col_names[i]), delim, quotechar, escapechar) ))
+        push!(push_exprs.args, :( _writevalue(io, i.$(col_names[i]), delim, quotechar, escapechar, missingstring) ))
         if i<n
             push!(push_exprs.args, :( print(io, delim ) ))
         end
@@ -46,7 +46,7 @@ end
     end
 end
 
-function _save(io, data; delim=',', quotechar='"', escapechar='\\', header=true)
+function _save(io, data; delim=',', quotechar='"', escapechar='\\', missingstring="NA", header=true)
     isiterabletable(data) || error("Can't write this data to a CSV file.")
 
     it = getiterator(data)
@@ -62,29 +62,22 @@ function _save(io, data; delim=',', quotechar='"', escapechar='\\', header=true)
         end
         println(io)
     end
-    _writecsv(io, it, eltype(it), delim, quotechar_internal, escapechar)
+    _writecsv(io, it, eltype(it), delim, quotechar_internal, escapechar, missingstring)
 end
 
-function _save(filename::AbstractString, data; delim=',', quotechar='"', escapechar='\\', header=true)
+function _save(filename::AbstractString, data; delim=',', quotechar='"', escapechar='\\', missingstring="NA", header=true)
     isiterabletable(data) || error("Can't write this data to a CSV file.")
 
     open(filename, "w") do io
-        _save(io, data, delim=delim, quotechar=quotechar, escapechar=escapechar, header=header)
+        _save(io, data, delim=delim, quotechar=quotechar, escapechar=escapechar, missingstring=missingstring,  header=header)
     end
 end
 
-function fileio_save(f::FileIO.File{FileIO.format"CSV"}, data; delim=',', quotechar='"', escapechar='\\', header=true)
-    return _save(f.filename, data, delim=delim, quotechar=quotechar, escapechar=escapechar, header=header)
+for (FMT, odelim) in ((:CSV, ","), (:TSV, "\t"))
+    for (FF, field) in ((:File, :filename), (:Stream, :io))
+        @eval function fileio_save(f::FileIO.$FF{FileIO.DataFormat{$(Meta.quot(FMT))}}, data; delim=$odelim, quotechar='"', escapechar='\\', missingstring="NA", header=true)
+            return _save(f.$field, data, delim=delim, quotechar=quotechar, escapechar=escapechar, missingstring=missingstring, header=header)
+        end
+    end
 end
 
-function fileio_save(f::FileIO.File{FileIO.format"TSV"}, data; delim='\t', quotechar='"', escapechar='\\', header=true)
-    return _save(f.filename, data, delim=delim, quotechar=quotechar, escapechar=escapechar, header=header)
-end
-
-function fileio_save(s::FileIO.Stream{FileIO.format"CSV"}, data; delim=',', quotechar='"', escapechar='\\', header=true)
-    return _save(s.io, data, delim=delim, quotechar=quotechar, escapechar=escapechar, header=header)
-end
-
-function fileio_save(s::FileIO.Stream{FileIO.format"TSV"}, data; delim='\t', quotechar='"', escapechar='\\', header=true)
-    return _save(s.io, data, delim=delim, quotechar=quotechar, escapechar=escapechar, header=header)
-end

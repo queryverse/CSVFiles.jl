@@ -96,7 +96,7 @@ save(Stream(format"CSV", io), it)
 
 The ``save`` function takes a number of arguments:
 ````julia
-save(f::FileIO.File{FileIO.format"CSV"}, data; delim=',', quotechar='"', escapechar='\\', header=true)
+save(f::FileIO.File{FileIO.format"CSV"}, data; delim=',', quotechar='"', escapechar='\\', missingstring="NA", header=true)
 ````
 
 #### Arguments
@@ -104,6 +104,7 @@ save(f::FileIO.File{FileIO.format"CSV"}, data; delim=',', quotechar='"', escapec
 * ``delim``: the delimiter character, defaults to ``,``.
 * ``quotechar``: character used to quote strings, defaults to ``"``.
 * ``escapechar``: character used to escape ``quotechar`` in strings, defaults to ``\``.
+* ``missingstring``: string to insert in the place of missing values, defaults to ``NA``.
 * ``header``: whether a header should be written, defaults to ``true.
 
 ### Using the pipe syntax
