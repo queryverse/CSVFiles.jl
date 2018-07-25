@@ -48,7 +48,7 @@ end
         output_filename2 = tempname() * ".csv"
 
         try
-            array3 |> save(output_filename2, missingstring="")
+            array3 |> save(output_filename2, nastring="")
         finally
             rm(output_filename2)
         end
