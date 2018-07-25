@@ -1,3 +1,6 @@
+# CSVFiles.jl v0.8.0
+* Add nastring option to save
+
 # CSVFiles.jl v0.7.0
 * Add show method
 
