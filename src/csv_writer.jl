@@ -73,11 +73,20 @@ function _save(filename::AbstractString, data; delim=',', quotechar='"', escapec
     end
 end
 
-for (FMT, odelim) in ((:CSV, ","), (:TSV, "\t"))
-    for (FF, field) in ((:File, :filename), (:Stream, :io))
-        @eval function fileio_save(f::FileIO.$FF{FileIO.DataFormat{$(Meta.quot(FMT))}}, data; delim=$odelim, quotechar='"', escapechar='\\', nastring="NA", header=true)
-            return _save(f.$field, data, delim=delim, quotechar=quotechar, escapechar=escapechar, nastring=nastring, header=header)
-        end
-    end
+
+
+function fileio_save(f::FileIO.File{FileIO.format"CSV"}, data; delim=',', quotechar='"', escapechar='\\', nastring="NA", header=true)
+    return _save(f.filename, data, delim=delim, quotechar=quotechar, escapechar=escapechar, nastring=nastring, header=header)
 end
 
+function fileio_save(f::FileIO.File{FileIO.format"TSV"}, data; delim='\t', quotechar='"', escapechar='\\', nastring="NA", header=true)
+    return _save(f.filename, data, delim=delim, quotechar=quotechar, escapechar=escapechar, nastring=nastring, header=header)
+end
+
+function fileio_save(s::FileIO.Stream{FileIO.format"CSV"}, data; delim=',', quotechar='"', escapechar='\\', nastring="NA", header=true)
+    return _save(s.io, data, delim=delim, quotechar=quotechar, escapechar=escapechar, nastring=nastring, header=header)
+end
+
+function fileio_save(s::FileIO.Stream{FileIO.format"TSV"}, data; delim='\t', quotechar='"', escapechar='\\', nastring="NA", header=true)
+    return _save(s.io, data, delim=delim, quotechar=quotechar, escapechar=escapechar, nastring=nastring, header=header)
+end
