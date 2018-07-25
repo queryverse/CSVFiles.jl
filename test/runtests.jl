@@ -5,88 +5,122 @@ using Base.Test
 
 @testset "CSVFiles" begin
 
-array = collect(load(joinpath(@__DIR__, "data.csv")))
-@test length(array) == 3
-@test array == [@NT(Name="John",Age=34.,Children=2),@NT(Name="Sally",Age=54.,Children=1),@NT(Name="Jim",Age=23.,Children=0)]
+@testset "basic" begin
+    array = collect(load(joinpath(@__DIR__, "data.csv")))
+    @test length(array) == 3
+    @test array == [@NT(Name="John",Age=34.,Children=2),@NT(Name="Sally",Age=54.,Children=1),@NT(Name="Jim",Age=23.,Children=0)]
 
-output_filename = tempname() * ".csv"
+    output_filename = tempname() * ".csv"
 
-try
-    array |> save(output_filename)
+    try
+        array |> save(output_filename)
 
-    array2 = collect(load(output_filename))
+        array2 = collect(load(output_filename))
 
-    @test array == array2
-finally
-    gc()
-    rm(output_filename)
+        @test array == array2
+    finally
+        gc()
+        rm(output_filename)
+    end
 end
 
-csvf = load(joinpath(@__DIR__, "data.csv"))
+@testset "traits" begin
+    csvf = load(joinpath(@__DIR__, "data.csv"))
 
-@test IteratorInterfaceExtensions.isiterable(csvf) == true
-@test TableTraits.isiterabletable(csvf) == true
-
-array3 = [@NT(a=DataValue(3),b="df\"e"),@NT(a=DataValue{Int}(),b="something")]
-
-output_filename2 = tempname() * ".csv"
-
-try
-    array3 |> save(output_filename2)
-finally
-    rm(output_filename2)
+    @test IteratorInterfaceExtensions.isiterable(csvf) == true
+    @test TableTraits.isiterabletable(csvf) == true
 end
 
-array = collect(load("https://raw.githubusercontent.com/davidanthoff/CSVFiles.jl/v0.2.0/test/data.csv"))
-@test length(array) == 3
-@test array == [@NT(Name="John",Age=34.,Children=2),@NT(Name="Sally",Age=54.,Children=1),@NT(Name="Jim",Age=23.,Children=0)]
+@testset "missing values" begin
+    array3 = [@NT(a=DataValue(3),b="df\"e"),@NT(a=DataValue{Int}(),b="something")]
 
-output_filename3 = tempname() * ".tsv"
+    @testset "default" begin
+        output_filename2 = tempname() * ".csv"
 
-try
-    array |> save(output_filename3)
+        try
+            array3 |> save(output_filename2)
+        finally
+            rm(output_filename2)
+        end
+    end
 
-    array4 = collect(load(output_filename3))
-    @test length(array4) == 3
-    @test array4 == array
-finally
-    gc()
-    rm(output_filename3)
+    @testset "alternate" begin
+        output_filename2 = tempname() * ".csv"
+
+        try
+            array3 |> save(output_filename2, nastring="")
+        finally
+            rm(output_filename2)
+        end
+    end
 end
 
-output_filename4 = tempname() * ".csv"
+@testset "Less Basic" begin
+    array = [@NT(Name="John",Age=34.,Children=2),@NT(Name="Sally",Age=54.,Children=1),@NT(Name="Jim",Age=23.,Children=0)]
+    @testset "remote loading" begin
+        rem_array = collect(load("https://raw.githubusercontent.com/davidanthoff/CSVFiles.jl/v0.2.0/test/data.csv"))
+        @test length(rem_array) == 3
+        @test rem_array == array
+    end
 
-try
-    array |> save(output_filename4, quotechar=nothing)
+    @testset "can round trip TSV" begin
+        output_filename3 = tempname() * ".tsv"
+        
+        try
+            array |> save(output_filename3)
+            
+            array4 = collect(load(output_filename3))
+            @test length(array4) == 3
+            @test array4 == array
+        finally
+            gc()
+            rm(output_filename3)
+        end
+    end
+    
+    @testset "no quote" begin
+        output_filename4 = tempname() * ".csv"
 
-finally
-    gc()
-    rm(output_filename4)
+        try
+            @show output_filename4
+            array |> save(output_filename4, quotechar=nothing)
+
+        finally
+            gc()
+            rm(output_filename4)
+        end
+    end
 end
 
-data = [@NT(Name="John",Age=34.,Children=2),@NT(Name="Sally",Age=54.,Children=1),@NT(Name="Jim",Age=23.,Children=0)]
+@testset "Streams" begin
+    data = [@NT(Name="John",Age=34.,Children=2),@NT(Name="Sally",Age=54.,Children=1),@NT(Name="Jim",Age=23.,Children=0)]
 
-stream = IOBuffer()
-mark(stream)
-fileiostream = FileIO.Stream(FileIO.format"CSV", stream)
-save(fileiostream, data)
-reset(stream)
-csvstream = load(fileiostream)
-reloaded_data = collect(csvstream)
-@test IteratorInterfaceExtensions.isiterable(csvstream)
-@test TableTraits.isiterabletable(csvstream)
-@test reloaded_data == data
+    @testset "CSV"  begin
+        stream = IOBuffer()
+        mark(stream)
+        fileiostream = FileIO.Stream(FileIO.format"CSV", stream)
+        save(fileiostream, data)
+        reset(stream)
+        csvstream = load(fileiostream)
+        reloaded_data = collect(csvstream)
+        @test IteratorInterfaceExtensions.isiterable(csvstream)
+        @test TableTraits.isiterabletable(csvstream)
+        @test reloaded_data == data
+    end
 
-stream = IOBuffer()
-mark(stream)
-fileiostream = FileIO.Stream(FileIO.format"TSV", stream)
-save(fileiostream, data)
-reset(stream)
-csvstream = load(fileiostream)
-reloaded_data = collect(csvstream)
-@test IteratorInterfaceExtensions.isiterable(csvstream)
-@test TableTraits.isiterabletable(csvstream)
-@test reloaded_data == data
-
+    @testset "TSV" begin
+        stream = IOBuffer()
+        mark(stream)
+        fileiostream = FileIO.Stream(FileIO.format"TSV", stream)
+        save(fileiostream, data)
+        reset(stream)
+        csvstream = load(fileiostream)
+        reloaded_data = collect(csvstream)
+        @test IteratorInterfaceExtensions.isiterable(csvstream)
+        @test TableTraits.isiterabletable(csvstream)
+        @test reloaded_data == data
+    end
 end
+
+end # Outer-most testset
 
