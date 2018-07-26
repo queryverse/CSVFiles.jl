@@ -1,10 +1,10 @@
 # CSVFiles
 
 [![Project Status: Active - The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
-[![Build Status](https://travis-ci.org/davidanthoff/CSVFiles.jl.svg?branch=master)](https://travis-ci.org/davidanthoff/CSVFiles.jl)
-[![Build status](https://ci.appveyor.com/api/projects/status/6l1m4w26s2b7x9jt/branch/master?svg=true)](https://ci.appveyor.com/project/davidanthoff/csvfiles-jl/branch/master)
+[![Build Status](https://travis-ci.org/queryverse/CSVFiles.jl.svg?branch=master)](https://travis-ci.org/queryverse/CSVFiles.jl)
+[![Build status](https://ci.appveyor.com/api/projects/status/6l1m4w26s2b7x9jt/branch/master?svg=true)](https://ci.appveyor.com/project/queryverse/csvfiles-jl/branch/master)
 [![CSVFiles](http://pkg.julialang.org/badges/CSVFiles_0.6.svg)](http://pkg.julialang.org/?pkg=CSVFiles)
-[![codecov.io](http://codecov.io/github/davidanthoff/CSVFiles.jl/coverage.svg?branch=master)](http://codecov.io/github/davidanthoff/CSVFiles.jl?branch=master)
+[![codecov.io](http://codecov.io/github/queryverse/CSVFiles.jl/coverage.svg?branch=master)](http://codecov.io/github/queryverse/CSVFiles.jl?branch=master)
 
 ## Overview
 
@@ -27,7 +27,7 @@ using CSVFiles, DataFrames
 df = DataFrame(load("data.csv"))
 ````
 
-The call to ``load`` returns a ``struct`` that is an [IterableTable.jl](https://github.com/davidanthoff/IterableTables.jl), so it can be passed to any function that can handle iterable tables, i.e. all the sinks in [IterableTable.jl](https://github.com/davidanthoff/IterableTables.jl). Here are some examples of materializing a CSV file into data structures that are not a ``DataFrame``:
+The call to ``load`` returns a ``struct`` that is an [IterableTable.jl](https://github.com/queryverse/IterableTables.jl), so it can be passed to any function that can handle iterable tables, i.e. all the sinks in [IterableTable.jl](https://github.com/queryverse/IterableTables.jl). Here are some examples of materializing a CSV file into data structures that are not a ``DataFrame``:
 
 ````julia
 using CSVFiles, DataTables, IndexedTables, TimeSeries, Temporal, Gadfly
@@ -85,7 +85,7 @@ using CSVFiles
 
 save("output.csv", it)
 ````
-This will work as long as ``it`` is any of the types supported as sources in [IterableTables.jl](https://github.com/davidanthoff/IterableTables.jl).
+This will work as long as ``it`` is any of the types supported as sources in [IterableTables.jl](https://github.com/queryverse/IterableTables.jl).
 
 One can also save into an arbitrary stream:
 ````julia
@@ -127,4 +127,4 @@ df = # Aquire a DataFrame somehow
 df |> save("output.csv")
 ````
 
-The pipe syntax is especially useful when combining it with [Query.jl](https://github.com/davidanthoff/Query.jl) queries, for example one can easily load a CSV file, pipe it into a query, then pipe it to the ``save`` function to store the results in a new file.
+The pipe syntax is especially useful when combining it with [Query.jl](https://github.com/queryverse/Query.jl) queries, for example one can easily load a CSV file, pipe it into a query, then pipe it to the ``save`` function to store the results in a new file.

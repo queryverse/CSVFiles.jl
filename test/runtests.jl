@@ -58,7 +58,7 @@ end
 @testset "Less Basic" begin
     array = [@NT(Name="John",Age=34.,Children=2),@NT(Name="Sally",Age=54.,Children=1),@NT(Name="Jim",Age=23.,Children=0)]
     @testset "remote loading" begin
-        rem_array = collect(load("https://raw.githubusercontent.com/davidanthoff/CSVFiles.jl/v0.2.0/test/data.csv"))
+        rem_array = collect(load("https://raw.githubusercontent.com/queryverse/CSVFiles.jl/v0.2.0/test/data.csv"))
         @test length(rem_array) == 3
         @test rem_array == array
     end
