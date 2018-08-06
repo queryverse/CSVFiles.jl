@@ -1,14 +1,16 @@
 using CSVFiles
-using NamedTuples
+using IteratorInterfaceExtensions
+using TableTraits
+using FileIO
 using DataValues
-using Base.Test
+using Test
 
 @testset "CSVFiles" begin
 
 @testset "basic" begin
     array = collect(load(joinpath(@__DIR__, "data.csv")))
     @test length(array) == 3
-    @test array == [@NT(Name="John",Age=34.,Children=2),@NT(Name="Sally",Age=54.,Children=1),@NT(Name="Jim",Age=23.,Children=0)]
+    @test array == [(Name="John",Age=34.,Children=2),(Name="Sally",Age=54.,Children=1),(Name="Jim",Age=23.,Children=0)]
 
     output_filename = tempname() * ".csv"
 
@@ -19,7 +21,7 @@ using Base.Test
 
         @test array == array2
     finally
-        gc()
+        GC.gc()
         rm(output_filename)
     end
 end
@@ -32,7 +34,7 @@ end
 end
 
 @testset "missing values" begin
-    array3 = [@NT(a=DataValue(3),b="df\"e"),@NT(a=DataValue{Int}(),b="something")]
+    array3 = [(a=DataValue(3),b="df\"e"),(a=DataValue{Int}(),b="something")]
 
     @testset "default" begin
         output_filename2 = tempname() * ".csv"
@@ -56,7 +58,7 @@ end
 end
 
 @testset "Less Basic" begin
-    array = [@NT(Name="John",Age=34.,Children=2),@NT(Name="Sally",Age=54.,Children=1),@NT(Name="Jim",Age=23.,Children=0)]
+    array = [(Name="John",Age=34.,Children=2),(Name="Sally",Age=54.,Children=1),(Name="Jim",Age=23.,Children=0)]
     @testset "remote loading" begin
         rem_array = collect(load("https://raw.githubusercontent.com/queryverse/CSVFiles.jl/v0.2.0/test/data.csv"))
         @test length(rem_array) == 3
@@ -73,7 +75,7 @@ end
             @test length(array4) == 3
             @test array4 == array
         finally
-            gc()
+            GC.gc()
             rm(output_filename3)
         end
     end
@@ -86,14 +88,14 @@ end
             array |> save(output_filename4, quotechar=nothing)
 
         finally
-            gc()
+            GC.gc()
             rm(output_filename4)
         end
     end
 end
 
 @testset "Streams" begin
-    data = [@NT(Name="John",Age=34.,Children=2),@NT(Name="Sally",Age=54.,Children=1),@NT(Name="Jim",Age=23.,Children=0)]
+    data = [(Name="John",Age=34.,Children=2),(Name="Sally",Age=54.,Children=1),(Name="Jim",Age=23.,Children=0)]
 
     @testset "CSV"  begin
         stream = IOBuffer()

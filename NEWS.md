@@ -1,3 +1,6 @@
+# CSVFiles.jl v0.9.0
+* Drop julia 0.6 support, add julia 0.7 support
+
 # CSVFiles.jl v0.8.0
 * Add nastring option to save
 

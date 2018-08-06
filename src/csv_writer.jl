@@ -1,25 +1,24 @@
+function _writevalue(io::IO, value::String, delim, quotechar::Nothing, escapechar, nastring)
+    print(io, value)
+end
+
 function _writevalue(io::IO, value::String, delim, quotechar, escapechar, nastring)
-    if isnull(quotechar)
-        print(io, value)
-    else
-        quotechar_unpacked = get(quotechar)
-        print(io, quotechar_unpacked)
-        for c in value
-            if c==quotechar_unpacked || c==escapechar
-                print(io, escapechar)
-            end
-            print(io, c)
+    print(io, quotechar)
+    for c in value
+        if c==quotechar || c==escapechar
+            print(io, escapechar)
         end
-        print(io, quotechar_unpacked)
+        print(io, c)
     end
+    print(io, quotechar)
 end
 
 function _writevalue(io::IO, value, delim, quotechar, escapechar, nastring)
     print(io, value)
 end
 
-function _writevalue{T}(io::IO, value::DataValue{T}, delim, quotechar, escapechar, nastring)
-    if isnull(value)
+function _writevalue(io::IO, value::DataValue{T}, delim, quotechar, escapechar, nastring) where {T}
+    if isna(value)
         print(io, nastring)
     else
         _writevalue(io, get(value), delim, quotechar, escapechar, nastring)
@@ -27,7 +26,7 @@ function _writevalue{T}(io::IO, value::DataValue{T}, delim, quotechar, escapecha
 end
 
 
-@generated function _writecsv{T}(io::IO, it, ::Type{T}, delim, quotechar, escapechar, nastring)
+@generated function _writecsv(io::IO, it, ::Type{T}, delim, quotechar, escapechar, nastring) where {T}
     col_names = fieldnames(T)
     n = length(col_names)
     push_exprs = Expr(:block)
@@ -50,19 +49,17 @@ function _save(io, data; delim=',', quotechar='"', escapechar='\\', nastring="NA
     isiterabletable(data) || error("Can't write this data to a CSV file.")
 
     it = getiterator(data)
-    colnames = TableTraits.column_names(it)
-
-    quotechar_internal = quotechar==nothing ? Nullable{Char}() : Nullable{Char}(quotechar)
+    colnames = collect(eltype(it).parameters[1])
 
     if header
-        if isnull(quotechar_internal)
+        if quotechar===nothing
             join(io,[string(colname) for colname in colnames],delim)
         else
-            join(io,["$(quotechar)" *replace(string(colname), quotechar, "$(escapechar)$(quotechar)") * "$(quotechar)" for colname in colnames],delim)
+            join(io,["$(quotechar)" * replace(string(colname), quotechar => "$(escapechar)$(quotechar)") * "$(quotechar)" for colname in colnames],delim)
         end
         println(io)
     end
-    _writecsv(io, it, eltype(it), delim, quotechar_internal, escapechar, nastring)
+    _writecsv(io, it, eltype(it), delim, quotechar, escapechar, nastring)
 end
 
 function _save(filename::AbstractString, data; delim=',', quotechar='"', escapechar='\\', nastring="NA", header=true)
