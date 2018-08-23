@@ -26,7 +26,7 @@ function Base.show(io::IO, ::MIME"text/html", source::CSVFile)
     TableShowUtils.printHTMLtable(io, getiterator(source))
 end
 
-Base.Multimedia.mimewritable(::MIME"text/html", source::CSVFile) = true
+Base.showable(::MIME"text/html", source::CSVFile) = true
 
 function Base.show(io::IO, source::CSVStream)
     TableShowUtils.printtable(io, getiterator(source), "CSV file")
@@ -36,7 +36,7 @@ function Base.show(io::IO, ::MIME"text/html", source::CSVStream)
     TableShowUtils.printHTMLtable(io, getiterator(source))
 end
 
-Base.Multimedia.mimewritable(::MIME"text/html", source::CSVStream) = true
+Base.showable(::MIME"text/html", source::CSVStream) = true
 
 function fileio_load(f::FileIO.File{FileIO.format"CSV"}, delim=','; args...)
     return CSVFile(f.filename, delim, args)
