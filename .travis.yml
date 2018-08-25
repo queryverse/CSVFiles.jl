@@ -1,4 +1,3 @@
-## Documentation: http://docs.travis-ci.com/user/languages/julia/
 language: julia
 os:
   - linux
@@ -9,10 +8,13 @@ julia:
   - nightly
 notifications:
   email: false
-script:
- - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
- - julia -e 'import Pkg; Pkg.clone(pwd()); Pkg.build("CSVFiles")'
- - julia --color=yes --check-bounds=yes -e 'import Pkg; Pkg.test("CSVFiles"; coverage=true)'
+branches:
+  only:
+  - master
+  - /release-.*/
+  - /v(\d+)\.(\d+)\.(\d+)/   
+matrix:
+  allow_failures:
+  - julia: nightly
 after_success:
-  # push coverage results to Codecov
-  - julia -e 'import Pkg; Pkg.add("Coverage"); using Coverage; Codecov.submit(Codecov.process_folder())'
+  - julia -e 'cd(Pkg.dir("CSVFiles")); Pkg.add("Coverage"); using Coverage; Codecov.submit(Codecov.process_folder())'
