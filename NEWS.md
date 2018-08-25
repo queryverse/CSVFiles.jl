@@ -1,3 +1,6 @@
+# CSVFiles.jl v0.9.1
+* Fix remaining julia 1.0 compat issues
+
 # CSVFiles.jl v0.9.0
 * Drop julia 0.6 support, add julia 0.7 support
 
