@@ -1,3 +1,6 @@
+# CSVFiles.jl v0.10.0
+* Add support for the get_columns_copy_using_missing interface
+
 # CSVFiles.jl v0.9.1
 * Fix remaining julia 1.0 compat issues
 

@@ -31,6 +31,7 @@ end
 
     @test IteratorInterfaceExtensions.isiterable(csvf) == true
     @test TableTraits.isiterabletable(csvf) == true
+    @test TableTraits.supports_get_columns_copy_using_missing(csvf) == true
 end
 
 @testset "missing values" begin
@@ -55,6 +56,13 @@ end
             rm(output_filename2)
         end
     end
+end
+
+@testset "Column interface" begin
+    csvf2 = load(joinpath(@__DIR__, "data.csv"))
+    @test TableTraits.supports_get_columns_copy_using_missing(csvf2) == true
+    data = TableTraits.get_columns_copy_using_missing(csvf2)
+    @test data == (Name=["John", "Sally", "Jim"], Age=[34.,54.,23.], Children=[2,1,0])
 end
 
 @testset "Less Basic" begin
@@ -103,11 +111,18 @@ end
         fileiostream = FileIO.Stream(FileIO.format"CSV", stream)
         save(fileiostream, data)
         reset(stream)
+        mark(stream)
         csvstream = load(fileiostream)
         reloaded_data = collect(csvstream)
-        @test IteratorInterfaceExtensions.isiterable(csvstream)
+        @test IteratorInterfaceExtensions.isiterable(csvstream)        
         @test TableTraits.isiterabletable(csvstream)
+        @test TableTraits.supports_get_columns_copy_using_missing(csvstream)
         @test reloaded_data == data
+
+        reset(stream)
+        csvstream = load(fileiostream)
+        reloaded_data2 = TableTraits.get_columns_copy_using_missing(csvstream)
+        @test reloaded_data2 == (Name=["John", "Sally", "Jim"], Age=[34., 54., 23.], Children=[2, 1, 0])
     end
 
     @testset "TSV" begin
@@ -116,11 +131,18 @@ end
         fileiostream = FileIO.Stream(FileIO.format"TSV", stream)
         save(fileiostream, data)
         reset(stream)
+        mark(stream)
         csvstream = load(fileiostream)
         reloaded_data = collect(csvstream)
         @test IteratorInterfaceExtensions.isiterable(csvstream)
         @test TableTraits.isiterabletable(csvstream)
+        @test TableTraits.supports_get_columns_copy_using_missing(csvstream)
         @test reloaded_data == data
+
+        reset(stream)
+        csvstream = load(fileiostream)
+        reloaded_data2 = TableTraits.get_columns_copy_using_missing(csvstream)
+        @test reloaded_data2 == (Name=["John", "Sally", "Jim"], Age=[34., 54., 23.], Children=[2, 1, 0])
     end
 end
 
