@@ -56,22 +56,33 @@ end
 
 IteratorInterfaceExtensions.isiterable(x::CSVFile) = true
 TableTraits.isiterabletable(x::CSVFile) = true
+TableTraits.supports_get_columns_copy_using_missing(x::CSVFile) = true
 
 IteratorInterfaceExtensions.isiterable(x::CSVStream) = true
 TableTraits.isiterabletable(x::CSVStream) = true
+TableTraits.supports_get_columns_copy_using_missing(x::CSVStream) = true
 
-function TableTraits.getiterator(file::CSVFile)
+function _loaddata(file)
     if startswith(file.filename, "https://") || startswith(file.filename, "http://")
         response = HTTP.get(file.filename)
         data = String(response.body)
-        res = TextParse._csvread(data, file.delim; file.keywords...)
+        return TextParse._csvread(data, file.delim; file.keywords...)
     else
-        res = csvread(file.filename, file.delim; file.keywords...)
+        return csvread(file.filename, file.delim; file.keywords...)
     end
+end
+
+function TableTraits.getiterator(file::CSVFile)
+    res = _loaddata(file)
 
     it = TableTraitsUtils.create_tableiterator([i for i in res[1]], [Symbol(i) for i in res[2]])
 
     return it
+end
+
+function TableTraits.get_columns_copy_using_missing(file::CSVFile)
+    columns, colnames = _loaddata(file)
+     return NamedTuple{(Symbol.(colnames)...,), Tuple{typeof.(columns)...}}((columns...,))
 end
 
 function TableTraits.getiterator(s::CSVStream)
@@ -80,6 +91,11 @@ function TableTraits.getiterator(s::CSVStream)
     it = TableTraitsUtils.create_tableiterator([i for i in res[1]], [Symbol(i) for i in res[2]])
 
     return it
+end
+
+function TableTraits.get_columns_copy_using_missing(s::CSVStream)
+    columns, colnames = TextParse.csvread(s.io, s.delim, s.keywords...)
+    return NamedTuple{(Symbol.(colnames)...,), Tuple{typeof.(columns)...}}((columns...,))
 end
 
 function Base.collect(x::CSVFile)
