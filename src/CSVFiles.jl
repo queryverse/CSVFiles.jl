@@ -38,11 +38,19 @@ end
 
 Base.showable(::MIME"text/html", source::CSVStream) = true
 
-function fileio_load(f::FileIO.File{FileIO.format"CSV"}, delim=','; args...)
+function fileio_load(f::FileIO.File{FileIO.format"CSV"}, delim::Char; args...)
     return CSVFile(f.filename, delim, args)
 end
 
-function fileio_load(f::FileIO.File{FileIO.format"TSV"}, delim='\t'; args...)
+function fileio_load(f::FileIO.File{FileIO.format"CSV"}; delim=',', args...)
+    return CSVFile(f.filename, delim, args)
+end
+
+function fileio_load(f::FileIO.File{FileIO.format"TSV"}, delim::Char; args...)
+    return CSVFile(f.filename, delim, args)
+end
+
+function fileio_load(f::FileIO.File{FileIO.format"TSV"}; delim='\t', args...)
     return CSVFile(f.filename, delim, args)
 end
 
