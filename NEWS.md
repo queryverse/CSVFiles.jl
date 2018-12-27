@@ -1,3 +1,6 @@
+# CSVFiles.jl v0.11.0
+* Change default escapechar for save to "
+
 # CSVFiles.jl v0.10.0
 * Add support for the get_columns_copy_using_missing interface
 
