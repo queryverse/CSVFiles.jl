@@ -45,7 +45,7 @@ end
     end
 end
 
-function _save(io, data; delim=',', quotechar='"', escapechar='\\', nastring="NA", header=true)
+function _save(io, data; delim=',', quotechar='"', escapechar='"', nastring="NA", header=true)
     isiterabletable(data) || error("Can't write this data to a CSV file.")
 
     it = getiterator(data)
@@ -62,7 +62,7 @@ function _save(io, data; delim=',', quotechar='"', escapechar='\\', nastring="NA
     _writecsv(io, it, eltype(it), delim, quotechar, escapechar, nastring)
 end
 
-function _save(filename::AbstractString, data; delim=',', quotechar='"', escapechar='\\', nastring="NA", header=true)
+function _save(filename::AbstractString, data; delim=',', quotechar='"', escapechar='"', nastring="NA", header=true)
     isiterabletable(data) || error("Can't write this data to a CSV file.")
 
     open(filename, "w") do io
@@ -72,18 +72,18 @@ end
 
 
 
-function fileio_save(f::FileIO.File{FileIO.format"CSV"}, data; delim=',', quotechar='"', escapechar='\\', nastring="NA", header=true)
+function fileio_save(f::FileIO.File{FileIO.format"CSV"}, data; delim=',', quotechar='"', escapechar='"', nastring="NA", header=true)
     return _save(f.filename, data, delim=delim, quotechar=quotechar, escapechar=escapechar, nastring=nastring, header=header)
 end
 
-function fileio_save(f::FileIO.File{FileIO.format"TSV"}, data; delim='\t', quotechar='"', escapechar='\\', nastring="NA", header=true)
+function fileio_save(f::FileIO.File{FileIO.format"TSV"}, data; delim='\t', quotechar='"', escapechar='"', nastring="NA", header=true)
     return _save(f.filename, data, delim=delim, quotechar=quotechar, escapechar=escapechar, nastring=nastring, header=header)
 end
 
-function fileio_save(s::FileIO.Stream{FileIO.format"CSV"}, data; delim=',', quotechar='"', escapechar='\\', nastring="NA", header=true)
+function fileio_save(s::FileIO.Stream{FileIO.format"CSV"}, data; delim=',', quotechar='"', escapechar='"', nastring="NA", header=true)
     return _save(s.io, data, delim=delim, quotechar=quotechar, escapechar=escapechar, nastring=nastring, header=header)
 end
 
-function fileio_save(s::FileIO.Stream{FileIO.format"TSV"}, data; delim='\t', quotechar='"', escapechar='\\', nastring="NA", header=true)
+function fileio_save(s::FileIO.Stream{FileIO.format"TSV"}, data; delim='\t', quotechar='"', escapechar='"', nastring="NA", header=true)
     return _save(s.io, data, delim=delim, quotechar=quotechar, escapechar=escapechar, nastring=nastring, header=header)
 end

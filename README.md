@@ -96,7 +96,7 @@ save(Stream(format"CSV", io), it)
 
 The ``save`` function takes a number of arguments:
 ````julia
-save(f::FileIO.File{FileIO.format"CSV"}, data; delim=',', quotechar='"', escapechar='\\', nastring="NA", header=true)
+save(f::FileIO.File{FileIO.format"CSV"}, data; delim=',', quotechar='"', escapechar='"', nastring="NA", header=true)
 ````
 
 #### Arguments
