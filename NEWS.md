@@ -1,3 +1,6 @@
+# CSVFiles.jl v0.12.0
+* Export FileIO.File and FileIO.@format_str
+
 # CSVFiles.jl v0.11.0
 * Change default escapechar for save to "
 

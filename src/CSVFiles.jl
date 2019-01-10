@@ -4,7 +4,7 @@ using TextParse, IteratorInterfaceExtensions, TableTraits, TableTraitsUtils,
     DataValues, FileIO, HTTP, TableShowUtils
 import IterableTables
 
-export load, save
+export load, save, File, @format_str
 
 struct CSVFile
     filename::String
