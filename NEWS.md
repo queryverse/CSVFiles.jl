@@ -1,3 +1,6 @@
+# CSVFiles.jl v0.13.0
+* Never use StringVector, always use Vector{String} instead
+
 # CSVFiles.jl v0.12.0
 * Export FileIO.File and FileIO.@format_str
 
