@@ -1,3 +1,6 @@
+# CSVFiles.jl v0.14.0
+* Add support for 'application/vnd.dataresource+json' MIME type
+
 # CSVFiles.jl v0.13.0
 * Never use StringVector, always use Vector{String} instead
 

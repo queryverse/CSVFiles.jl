@@ -28,6 +28,12 @@ end
 
 Base.showable(::MIME"text/html", source::CSVFile) = true
 
+function Base.show(io::IO, ::MIME"application/vnd.dataresource+json", source::CSVFile)
+    TableShowUtils.printdataresource(io, getiterator(source))
+end
+
+Base.showable(::MIME"application/vnd.dataresource+json", source::CSVFile) = true
+
 function Base.show(io::IO, source::CSVStream)
     TableShowUtils.printtable(io, getiterator(source), "CSV file")
 end
@@ -37,6 +43,12 @@ function Base.show(io::IO, ::MIME"text/html", source::CSVStream)
 end
 
 Base.showable(::MIME"text/html", source::CSVStream) = true
+
+function Base.show(io::IO, ::MIME"application/vnd.dataresource+json", source::CSVStream)
+    TableShowUtils.printdataresource(io, getiterator(source))
+end
+
+Base.showable(::MIME"application/vnd.dataresource+json", source::CSVStream) = true
 
 function fileio_load(f::FileIO.File{FileIO.format"CSV"}, delim=','; args...)
     return CSVFile(f.filename, delim, args)
