@@ -146,5 +146,49 @@ end
     end
 end
 
+@testset "show" begin
+    x = load(joinpath(@__DIR__, "data.csv"))
+
+    @test sprint(show, x) == """
+    3x3 CSV file
+    Name  │ Age  │ Children
+    ──────┼──────┼─────────
+    John  │ 34.0 │ 2       
+    Sally │ 54.0 │ 1       
+    Jim   │ 23.0 │ 0       """
+
+    @test sprint((stream,data)->show(stream, "text/html", data), x) ==
+        "<table><thead><tr><th>Name</th><th>Age</th><th>Children</th></tr></thead><tbody><tr><td>&quot;John&quot;</td><td>34.0</td><td>2</td></tr><tr><td>&quot;Sally&quot;</td><td>54.0</td><td>1</td></tr><tr><td>&quot;Jim&quot;</td><td>23.0</td><td>0</td></tr></tbody></table>"
+
+    @test sprint((stream,data)->show(stream, "application/vnd.dataresource+json", data), x) ==
+        "{\"schema\":{\"fields\":[{\"name\":\"Name\",\"type\":\"string\"},{\"name\":\"Age\",\"type\":\"number\"},{\"name\":\"Children\",\"type\":\"integer\"}]},\"data\":[{\"Name\":\"John\",\"Age\":34.0,\"Children\":2},{\"Name\":\"Sally\",\"Age\":54.0,\"Children\":1},{\"Name\":\"Jim\",\"Age\":23.0,\"Children\":0}]}"
+
+    @test showable("text/html", x) == true
+    @test showable("application/vnd.dataresource+json", x) == true
+
+    open("data.csv", "r") do f
+        x2 = load(Stream(format"CSV", f))
+
+        @test sprint(show, x2) == """
+    3x3 CSV file
+    Name  │ Age  │ Children
+    ──────┼──────┼─────────
+    John  │ 34.0 │ 2       
+    Sally │ 54.0 │ 1       
+    Jim   │ 23.0 │ 0       """
+
+        @test sprint((stream,data)->show(stream, "text/html", data), x2) ==
+            "<table><thead><tr><th>Name</th><th>Age</th><th>Children</th></tr></thead><tbody><tr><td>&quot;John&quot;</td><td>34.0</td><td>2</td></tr><tr><td>&quot;Sally&quot;</td><td>54.0</td><td>1</td></tr><tr><td>&quot;Jim&quot;</td><td>23.0</td><td>0</td></tr></tbody></table>"
+    
+        @test sprint((stream,data)->show(stream, "application/vnd.dataresource+json", data), x2) ==
+            "{\"schema\":{\"fields\":[{\"name\":\"Name\",\"type\":\"string\"},{\"name\":\"Age\",\"type\":\"number\"},{\"name\":\"Children\",\"type\":\"integer\"}]},\"data\":[{\"Name\":\"John\",\"Age\":34.0,\"Children\":2},{\"Name\":\"Sally\",\"Age\":54.0,\"Children\":1},{\"Name\":\"Jim\",\"Age\":23.0,\"Children\":0}]}"
+
+        @test showable("text/html", x2) == true
+        @test showable("application/vnd.dataresource+json", x2) == true        
+    end
+
+    
+end
+
 end # Outer-most testset
 
