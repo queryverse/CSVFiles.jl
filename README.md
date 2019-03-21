@@ -27,6 +27,14 @@ using CSVFiles, DataFrames
 df = DataFrame(load("data.csv"))
 ````
 
+To read a gzipped CSV file into a ``DataFrame``:
+
+````julia
+using CSVFiles, DataFrames
+
+df = DataFrame(load(File(format"CSV", "data.csv.gz")))
+````
+
 The call to ``load`` returns a ``struct`` that is an [IterableTable.jl](https://github.com/queryverse/IterableTables.jl), so it can be passed to any function that can handle iterable tables, i.e. all the sinks in [IterableTable.jl](https://github.com/queryverse/IterableTables.jl). Here are some examples of materializing a CSV file into data structures that are not a ``DataFrame``:
 
 ````julia
@@ -86,6 +94,14 @@ using CSVFiles
 save("output.csv", it)
 ````
 This will work as long as ``it`` is any of the types supported as sources in [IterableTables.jl](https://github.com/queryverse/IterableTables.jl).
+
+Compressed CSV files can be created by specifying the ``.gz`` file extension:
+
+````julia
+using CSVFiles
+
+save(File(format"CSV", "output.csv.gz"), df)
+````
 
 One can also save into an arbitrary stream:
 ````julia

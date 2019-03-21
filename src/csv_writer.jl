@@ -65,8 +65,16 @@ end
 function _save(filename::AbstractString, data; delim=',', quotechar='"', escapechar='"', nastring="NA", header=true)
     isiterabletable(data) || error("Can't write this data to a CSV file.")
 
-    open(filename, "w") do io
-        _save(io, data, delim=delim, quotechar=quotechar, escapechar=escapechar, nastring=nastring,  header=header)
+    ext = last(split(filename, '.'))
+
+    if ext == "gz" # Gzipped
+        open(GzipCompressorStream, filename, "w") do io
+            _save(io, data, delim=delim, quotechar=quotechar, escapechar=escapechar, nastring=nastring,  header=header)
+        end
+    else
+        open(filename, "w") do io
+            _save(io, data, delim=delim, quotechar=quotechar, escapechar=escapechar, nastring=nastring,  header=header)
+        end
     end
 end
 

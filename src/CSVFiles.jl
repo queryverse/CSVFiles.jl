@@ -1,7 +1,7 @@
 module CSVFiles
 
 using TextParse, IteratorInterfaceExtensions, TableTraits, TableTraitsUtils,
-    DataValues, FileIO, HTTP, TableShowUtils
+    DataValues, FileIO, HTTP, TableShowUtils, CodecZlib
 import IterableTables
 
 export load, save, File, @format_str
