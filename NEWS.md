@@ -1,3 +1,6 @@
+# CSVFiles.jl v0.15.0
+* Add support for writing gz compressed files
+
 # CSVFiles.jl v0.14.0
 * Add support for 'application/vnd.dataresource+json' MIME type
 
