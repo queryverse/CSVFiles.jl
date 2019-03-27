@@ -146,6 +146,32 @@ end
     end
 end
 
+@testset "Compression" begin
+    data = [(Name="John",Age=34.,Children=2),(Name="Sally",Age=54.,Children=1),(Name="Jim",Age=23.,Children=0)]
+
+    @testset "CSV" begin
+        output_filename = "output.csv.gz"
+        try
+            save(File(format"CSV", output_filename), data)
+            reloaded_data = collect(load(File(format"CSV", output_filename)))
+            @test reloaded_data == data
+        finally
+            rm(output_filename)
+        end
+    end
+
+    @testset "TSV" begin
+        output_filename = "output.tsv.gz"
+        try
+            save(File(format"TSV", output_filename), data)
+            reloaded_data = collect(load(File(format"TSV", output_filename)))
+            @test reloaded_data == data
+        finally
+            rm(output_filename)
+        end
+    end
+end
+
 @testset "show" begin
     x = load(joinpath(@__DIR__, "data.csv"))
 
