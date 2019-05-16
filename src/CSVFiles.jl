@@ -84,7 +84,7 @@ function _loaddata(file)
     end
 end
 
-function TableTraits.getiterator(file::CSVFile)
+function IteratorInterfaceExtensions.getiterator(file::CSVFile)
     res = _loaddata(file)
 
     it = TableTraitsUtils.create_tableiterator([i for i in res[1]], [Symbol(i) for i in res[2]])
@@ -97,7 +97,7 @@ function TableTraits.get_columns_copy_using_missing(file::CSVFile)
      return NamedTuple{(Symbol.(colnames)...,), Tuple{typeof.(columns)...}}((columns...,))
 end
 
-function TableTraits.getiterator(s::CSVStream)
+function IteratorInterfaceExtensions.getiterator(s::CSVStream)
     res = TextParse.csvread(s.io, s.delim; stringarraytype=Array, s.keywords...)
 
     it = TableTraitsUtils.create_tableiterator([i for i in res[1]], [Symbol(i) for i in res[2]])
