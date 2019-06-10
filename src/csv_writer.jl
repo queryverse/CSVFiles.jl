@@ -95,3 +95,24 @@ end
 function fileio_save(s::FileIO.Stream{FileIO.format"TSV"}, data; delim='\t', quotechar='"', escapechar='"', nastring="NA", header=true)
     return _save(s.io, data, delim=delim, quotechar=quotechar, escapechar=escapechar, nastring=nastring, header=header)
 end
+
+#
+# Streaming version writes header (if any) on first call, then appends on subsequent calls.
+#
+const CSV_or_TSV = Union{FileIO.format"CSV", FileIO.format"TSV"}
+
+_delim(T, delim) = (delim === nothing ? (T <: FileIO.format"CSV" ? ',' : '\t') : delim)
+                            
+function fileio_savestreaming(f::FileIO.File{T}, data; delim=nothing, quotechar='"', escapechar='"', nastring="NA", 
+                              header=true) where T <: CSV_or_TSV
+    io = open(f.filename, "w")
+    _save(io, data; delim=_delim(T, delim), quotechar=quotechar, escapechar=escapechar, nastring=nastring, header=header)
+
+    return FileIO.Stream(T, io, f.filename)
+end
+
+function fileio_savestreaming(s::FileIO.Stream{T}, data; delim=nothing, quotechar='"', escapechar='"', nastring="NA", 
+                              header=false) where T <: CSV_or_TSV
+    return _save(s.io, data; delim=_delim(T, delim), quotechar=quotechar, escapechar=escapechar, nastring=nastring, header=header)
+end
+
