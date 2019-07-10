@@ -127,7 +127,7 @@ save(f::FileIO.File{FileIO.format"CSV"}, data; delim=',', quotechar='"', escapec
 Both ``load`` and ``save`` also support the pipe syntax. For example, to load a CSV file into a ``DataFrame``, one can use the following code:
 
 ````julia
-using CSVFiles, DataFrame
+using CSVFiles, DataFrames
 
 df = load("data.csv") |> DataFrame
 ````
@@ -135,7 +135,7 @@ df = load("data.csv") |> DataFrame
 To save an iterable table, one can use the following form:
 
 ````julia
-using CSVFiles, DataFrame
+using CSVFiles, DataFrames
 
 df = # Aquire a DataFrame somehow
 
