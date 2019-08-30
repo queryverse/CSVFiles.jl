@@ -92,7 +92,6 @@ end
         output_filename4 = tempname() * ".csv"
 
         try
-            @show output_filename4
             array |> save(output_filename4, quotechar=nothing)
 
         finally
