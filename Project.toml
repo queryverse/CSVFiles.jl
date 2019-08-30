@@ -16,9 +16,10 @@ TextParse = "e0df1984-e451-5cb5-8b61-797a481e67e3"
 
 [extras]
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
 
 [targets]
-test = ["Test"]
+test = ["Test", "DataFrames"]
 
 [compat]
 CodecZlib = "≥ 0.5.2"

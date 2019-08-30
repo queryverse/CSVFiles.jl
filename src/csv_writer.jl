@@ -95,3 +95,49 @@ end
 function fileio_save(s::FileIO.Stream{FileIO.format"TSV"}, data; delim='\t', quotechar='"', escapechar='"', nastring="NA", header=true)
     return _save(s.io, data, delim=delim, quotechar=quotechar, escapechar=escapechar, nastring=nastring, header=header)
 end
+
+#
+# Streaming version writes header (if any) on first call, then appends on subsequent calls.
+#
+const CSV_or_TSV = Union{FileIO.format"CSV", FileIO.format"TSV"}
+
+_delim(T) = T <: FileIO.format"CSV" ? ',' : '\t'
+
+mutable struct CSVFileSaveStream{T}
+    io::T
+    first_data_written::Bool
+    delim::Char
+    quotechar::Char
+    escapechar::Char
+    nastring::AbstractString
+    header::Bool
+end
+                            
+function fileio_savestreaming(f::FileIO.File{T}, data=nothing; delim=_delim(T), quotechar='"', escapechar='"', nastring="NA", 
+                              header=true) where T <: CSV_or_TSV
+    io = open(f.filename, "w")
+
+    if data!==nothing
+        _save(io, data; delim=delim, quotechar=quotechar, escapechar=escapechar, nastring=nastring, header=header)
+    end
+
+    return CSVFileSaveStream(io, data!==nothing, delim, quotechar, escapechar, nastring, header)
+end
+
+function fileio_savestreaming(s::FileIO.Stream{T}, data=nothing; delim=_delim(T), quotechar='"', escapechar='"', nastring="NA", 
+                              header=false) where T <: CSV_or_TSV
+
+    if data!==nothing
+        _save(s.io, data; delim=delim, quotechar=quotechar, escapechar=escapechar, nastring=nastring, header=header)
+    end
+                        
+    return CSVFileSaveStream(s.io, data!==nothing, delim, quotechar, escapechar, nastring, header)
+end
+
+function Base.write(s::CSVFileSaveStream, data)
+    _save(s.io, data; delim=s.delim, quotechar=s.quotechar, escapechar=s.escapechar, nastring=s.nastring, header=s.first_data_written ? false : header)
+end
+
+function Base.close(s::CSVFileSaveStream)
+    close(s.io)
+end

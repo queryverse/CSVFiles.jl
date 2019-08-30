@@ -92,7 +92,6 @@ end
         output_filename4 = tempname() * ".csv"
 
         try
-            @show output_filename4
             array |> save(output_filename4, quotechar=nothing)
 
         finally
@@ -212,8 +211,31 @@ end
         @test showable("text/html", x2) == true
         @test showable("application/vnd.dataresource+json", x2) == true        
     end
-
     
+end
+
+@testset "savestreaming" begin
+    using DataFrames
+
+    df = DataFrame(A = 1:2:1000, B = repeat(1:10, inner=50), C = 1:500)
+    df1 = df[1:5, :]
+    df2 = df[6:10, :]
+
+    # Test both csv and tsv formats
+    for ext in ("csv", "tsv")
+        fname = "output.$ext"
+        s = savestreaming(fname, df1)
+        write(s, df2)
+        write(s, df2)   # add this slice twice
+        close(s)
+    
+        new_df = DataFrame(load(fname))
+        @test new_df[1:5,:]   == df1
+        @test new_df[6:10,:]  == df2
+        @test new_df[11:15,:] == df2
+
+        rm(fname)
+    end
 end
 
 end # Outer-most testset
