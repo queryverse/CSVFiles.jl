@@ -67,7 +67,7 @@ df = DataFrame(load(Stream(format"CSV", io)))
 The ``load`` function also takes a number of parameters:
 
 ````julia
-load(f::FileIO.File{FileIO.format"CSV"}, delim=','; <arguments>...)
+load(f::FileIO.File{FileIO.format"CSV"}; <arguments>...)
 ````
 #### Arguments:
 

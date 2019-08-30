@@ -50,19 +50,39 @@ end
 
 Base.showable(::MIME"application/vnd.dataresource+json", source::CSVStream) = true
 
-function fileio_load(f::FileIO.File{FileIO.format"CSV"}, delim=','; args...)
+function fileio_load(f::FileIO.File{FileIO.format"CSV"}, deprecated_delim=nothing; delim=deprecated_delim===nothing ? ',' : deprecated_delim, args...)   
+    if deprecated_delim!==nothing
+        deprecated_delim!=delim && error("deprecated_delim and delim can not both be used at the same time.")
+        Base.depwarn("The positional `delim` keyword in the `load` function is deprecated. Instead use the keyword argument `delim`.", :CSVFiles)
+    end
+
     return CSVFile(f.filename, delim, args)
 end
 
-function fileio_load(f::FileIO.File{FileIO.format"TSV"}, delim='\t'; args...)
+function fileio_load(f::FileIO.File{FileIO.format"TSV"}, deprecated_delim=nothing; delim=deprecated_delim===nothing ? '\t' : deprecated_delim, args...)
+    if deprecated_delim!==nothing
+        deprecated_delim!=delim && error("deprecated_delim and delim can not both be used at the same time.")
+        Base.depwarn("The positional `delim` keyword in the `load` function is deprecated. Instead use the keyword argument `delim`.", :CSVFiles)
+    end
+
     return CSVFile(f.filename, delim, args)
 end
 
-function fileio_load(s::FileIO.Stream{FileIO.format"CSV"}, delim=','; args...)
+function fileio_load(s::FileIO.Stream{FileIO.format"CSV"}, deprecated_delim=nothing; delim=deprecated_delim===nothing ? ',' : deprecated_delim, args...)
+    if deprecated_delim!==nothing
+        deprecated_delim!=delim && error("deprecated_delim and delim can not both be used at the same time.")
+        Base.depwarn("The positional `delim` keyword in the `load` function is deprecated. Instead use the keyword argument `delim`.", :CSVFiles)
+    end
+
     return CSVStream(s.io, delim, args)
 end
 
-function fileio_load(s::FileIO.Stream{FileIO.format"TSV"}, delim='\t'; args...)
+function fileio_load(s::FileIO.Stream{FileIO.format"TSV"}, deprecated_delim=nothing; delim=deprecated_delim===nothing ? '\t' : deprecated_delim, args...)
+    if deprecated_delim!==nothing
+        deprecated_delim!=delim && error("deprecated_delim and delim can not both be used at the same time.")
+        Base.depwarn("The positional `delim` keyword in the `load` function is deprecated. Instead use the keyword argument `delim`.", :CSVFiles)
+    end
+
     return CSVStream(s.io, delim, args)
 end
 
