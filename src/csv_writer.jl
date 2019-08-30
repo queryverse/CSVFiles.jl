@@ -101,18 +101,43 @@ end
 #
 const CSV_or_TSV = Union{FileIO.format"CSV", FileIO.format"TSV"}
 
-_delim(T, delim) = (delim === nothing ? (T <: FileIO.format"CSV" ? ',' : '\t') : delim)
+_delim(T) = T <: FileIO.format"CSV" ? ',' : '\t'
+
+mutable struct CSVFileSaveStream{T}
+    io::T
+    first_data_written::Bool
+    delim::Char
+    quotechar::Char
+    escapechar::Char
+    nastring::AbstractString
+    header::Bool
+end
                             
-function fileio_savestreaming(f::FileIO.File{T}, data; delim=nothing, quotechar='"', escapechar='"', nastring="NA", 
+function fileio_savestreaming(f::FileIO.File{T}, data=nothing; delim=_delim(T), quotechar='"', escapechar='"', nastring="NA", 
                               header=true) where T <: CSV_or_TSV
     io = open(f.filename, "w")
-    _save(io, data; delim=_delim(T, delim), quotechar=quotechar, escapechar=escapechar, nastring=nastring, header=header)
 
-    return FileIO.Stream(T, io, f.filename)
+    if data!==nothing
+        _save(io, data; delim=delim, quotechar=quotechar, escapechar=escapechar, nastring=nastring, header=header)
+    end
+
+    return CSVFileSaveStream(io, data!==nothing, delim, quotechar, escapechar, nastring, header)
 end
 
-function fileio_savestreaming(s::FileIO.Stream{T}, data; delim=nothing, quotechar='"', escapechar='"', nastring="NA", 
+function fileio_savestreaming(s::FileIO.Stream{T}, data=nothing; delim=_delim(T), quotechar='"', escapechar='"', nastring="NA", 
                               header=false) where T <: CSV_or_TSV
-    return _save(s.io, data; delim=_delim(T, delim), quotechar=quotechar, escapechar=escapechar, nastring=nastring, header=header)
+
+    if data!==nothing
+        _save(s.io, data; delim=delim, quotechar=quotechar, escapechar=escapechar, nastring=nastring, header=header)
+    end
+                        
+    return CSVFileSaveStream(s.io, data!==nothing, delim, quotechar, escapechar, nastring, header)
 end
 
+function Base.write(s::CSVFileSaveStream, data)
+    _save(s.io, data; delim=s.delim, quotechar=s.quotechar, escapechar=s.escapechar, nastring=s.nastring, header=s.first_data_written ? false : header)
+end
+
+function Base.close(s::CSVFileSaveStream)
+    close(s.io)
+end

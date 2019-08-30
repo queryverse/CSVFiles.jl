@@ -226,8 +226,8 @@ end
     for ext in ("csv", "tsv")
         fname = "output.$ext"
         s = savestreaming(fname, df1)
-        savestreaming(s, df2)
-        savestreaming(s, df2)   # add this slice twice
+        write(s, df2)
+        write(s, df2)   # add this slice twice
         close(s)
     
         new_df = DataFrame(load(fname))
