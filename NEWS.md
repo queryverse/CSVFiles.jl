@@ -1,6 +1,7 @@
-# CSVFiles.jl v1.0.0
+# CSVFiles.jl v0.16.0
 * Drop julia 0.7 support
 * Migrate to Project.toml
+* Add streaming support
 
 # CSVFiles.jl v0.15.0
 * Add support for writing gz compressed files
