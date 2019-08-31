@@ -2,6 +2,7 @@
 * Drop julia 0.7 support
 * Migrate to Project.toml
 * Add streaming support
+* Make delim a keyword argument for loading
 
 # CSVFiles.jl v0.15.0
 * Add support for writing gz compressed files
