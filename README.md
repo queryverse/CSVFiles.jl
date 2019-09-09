@@ -69,6 +69,13 @@ The ``load`` function also takes a number of parameters:
 ````julia
 load(f::FileIO.File{FileIO.format"CSV"}; <arguments>...)
 ````
+
+For example, to load a CSV file that doesn't have the extension ".csv", you need
+
+```julia
+load(File(format"CSV", "csv_file.txt"))
+```
+
 #### Arguments:
 
 * ``delim``: the delimiter character
