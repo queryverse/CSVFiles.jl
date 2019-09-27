@@ -45,7 +45,7 @@ end
     end
 end
 
-function _save(io, data; delim=',', quotechar='"', escapechar='"', nastring="NA", header=true)
+function _save(io, data; delim=',', quotechar='"', escapechar='"', nastring="NA", header=true, append=false)
     isiterabletable(data) || error("Can't write this data to a CSV file.")
 
     it = getiterator(data)
@@ -62,17 +62,19 @@ function _save(io, data; delim=',', quotechar='"', escapechar='"', nastring="NA"
     _writecsv(io, it, eltype(it), delim, quotechar, escapechar, nastring)
 end
 
-function _save(filename::AbstractString, data; delim=',', quotechar='"', escapechar='"', nastring="NA", header=true)
+function _save(filename::AbstractString, data; delim=',', quotechar='"', escapechar='"', nastring="NA", header=true, append=false)
     isiterabletable(data) || error("Can't write this data to a CSV file.")
 
     ext = last(split(filename, '.'))
 
     if ext == "gz" # Gzipped
+        append && error("Appending to gzipped CSV file not supported.")
         open(GzipCompressorStream, filename, "w") do io
             _save(io, data, delim=delim, quotechar=quotechar, escapechar=escapechar, nastring=nastring,  header=header)
         end
     else
-        open(filename, "w") do io
+        mode = append ? "a" : "w"
+        open(filename, mode) do io
             _save(io, data, delim=delim, quotechar=quotechar, escapechar=escapechar, nastring=nastring,  header=header)
         end
     end
@@ -80,20 +82,20 @@ end
 
 
 
-function fileio_save(f::FileIO.File{FileIO.format"CSV"}, data; delim=',', quotechar='"', escapechar='"', nastring="NA", header=true)
-    return _save(f.filename, data, delim=delim, quotechar=quotechar, escapechar=escapechar, nastring=nastring, header=header)
+function fileio_save(f::FileIO.File{FileIO.format"CSV"}, data; delim=',', quotechar='"', escapechar='"', nastring="NA", header=true, append=false)
+    return _save(f.filename, data, delim=delim, quotechar=quotechar, escapechar=escapechar, nastring=nastring, header=header, append=append)
 end
 
-function fileio_save(f::FileIO.File{FileIO.format"TSV"}, data; delim='\t', quotechar='"', escapechar='"', nastring="NA", header=true)
-    return _save(f.filename, data, delim=delim, quotechar=quotechar, escapechar=escapechar, nastring=nastring, header=header)
+function fileio_save(f::FileIO.File{FileIO.format"TSV"}, data; delim='\t', quotechar='"', escapechar='"', nastring="NA", header=true, append=false)
+    return _save(f.filename, data, delim=delim, quotechar=quotechar, escapechar=escapechar, nastring=nastring, header=header, append=append)
 end
 
-function fileio_save(s::FileIO.Stream{FileIO.format"CSV"}, data; delim=',', quotechar='"', escapechar='"', nastring="NA", header=true)
-    return _save(s.io, data, delim=delim, quotechar=quotechar, escapechar=escapechar, nastring=nastring, header=header)
+function fileio_save(s::FileIO.Stream{FileIO.format"CSV"}, data; delim=',', quotechar='"', escapechar='"', nastring="NA", header=true, append=false)
+    return _save(s.io, data, delim=delim, quotechar=quotechar, escapechar=escapechar, nastring=nastring, header=header, append=append)
 end
 
-function fileio_save(s::FileIO.Stream{FileIO.format"TSV"}, data; delim='\t', quotechar='"', escapechar='"', nastring="NA", header=true)
-    return _save(s.io, data, delim=delim, quotechar=quotechar, escapechar=escapechar, nastring=nastring, header=header)
+function fileio_save(s::FileIO.Stream{FileIO.format"TSV"}, data; delim='\t', quotechar='"', escapechar='"', nastring="NA", header=true, append=false)
+    return _save(s.io, data, delim=delim, quotechar=quotechar, escapechar=escapechar, nastring=nastring, header=header, append=append)
 end
 
 #
@@ -112,25 +114,26 @@ mutable struct CSVFileSaveStream{T}
     nastring::AbstractString
     header::Bool
 end
-                            
-function fileio_savestreaming(f::FileIO.File{T}, data=nothing; delim=_delim(T), quotechar='"', escapechar='"', nastring="NA", 
-                              header=true) where T <: CSV_or_TSV
-    io = open(f.filename, "w")
+
+function fileio_savestreaming(f::FileIO.File{T}, data=nothing; delim=_delim(T), quotechar='"', escapechar='"', nastring="NA",
+                              header=true, append=false) where T <: CSV_or_TSV
+    mode = append = "a" : "w"
+    io = open(f.filename, mode)
 
     if data!==nothing
-        _save(io, data; delim=delim, quotechar=quotechar, escapechar=escapechar, nastring=nastring, header=header)
+        _save(io, data; delim=delim, quotechar=quotechar, escapechar=escapechar, nastring=nastring, header=header, append=append)
     end
 
     return CSVFileSaveStream(io, data!==nothing, delim, quotechar, escapechar, nastring, header)
 end
 
-function fileio_savestreaming(s::FileIO.Stream{T}, data=nothing; delim=_delim(T), quotechar='"', escapechar='"', nastring="NA", 
-                              header=false) where T <: CSV_or_TSV
+function fileio_savestreaming(s::FileIO.Stream{T}, data=nothing; delim=_delim(T), quotechar='"', escapechar='"', nastring="NA",
+                              header=false, append=false) where T <: CSV_or_TSV
 
     if data!==nothing
-        _save(s.io, data; delim=delim, quotechar=quotechar, escapechar=escapechar, nastring=nastring, header=header)
+        _save(s.io, data; delim=delim, quotechar=quotechar, escapechar=escapechar, nastring=nastring, header=header, append=append)
     end
-                        
+
     return CSVFileSaveStream(s.io, data!==nothing, delim, quotechar, escapechar, nastring, header)
 end
 
