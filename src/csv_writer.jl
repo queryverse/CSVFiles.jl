@@ -117,7 +117,7 @@ end
 
 function fileio_savestreaming(f::FileIO.File{T}, data=nothing; delim=_delim(T), quotechar='"', escapechar='"', nastring="NA",
                               header=true, append=false) where T <: CSV_or_TSV
-    mode = append = "a" : "w"
+    mode = append ? "a" : "w"
     io = open(f.filename, mode)
 
     if data!==nothing
