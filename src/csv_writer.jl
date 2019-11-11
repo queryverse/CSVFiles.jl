@@ -1,8 +1,8 @@
-function _writevalue(io::IO, value::String, delim, quotechar::Nothing, escapechar, nastring)
+function _writevalue(io::IO, value::AbstractString, delim, quotechar::Nothing, escapechar, nastring)
     print(io, value)
 end
 
-function _writevalue(io::IO, value::String, delim, quotechar, escapechar, nastring)
+function _writevalue(io::IO, value::AbstractString, delim, quotechar, escapechar, nastring)
     print(io, quotechar)
     for c in value
         if c==quotechar || c==escapechar
