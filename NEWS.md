@@ -1,3 +1,7 @@
+# CSVFiles.jl v0.16.1
+* Fix a bug in the write functionality
+* Add proper bounds to all dependencies
+
 # CSVFiles.jl v0.16.0
 * Drop julia 0.7 support
 * Migrate to Project.toml
