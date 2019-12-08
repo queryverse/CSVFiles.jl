@@ -75,6 +75,11 @@ For example, to load a CSV file that doesn't have the extension ".csv", you need
 ```julia
 load(File(format"CSV", "csv_file.txt"))
 ```
+Or, if a CSV file fails to load due to mixed content in specific columns, those column types may be defined in a dictionary of ``colparsers``. Here a ``String`` usually works best in overcoming mixed content types.
+
+```julia
+load("file.csv", colparsers=Dict(1=>String, 10=>Int64, 12=>String))
+```
 
 #### Arguments:
 
