@@ -82,7 +82,7 @@ load(File(format"CSV", "csv_file.txt"))
 * ``spacedelim``: a ``Bool`` indicating whether columns are space delimited. If ``true``, the value of ``delim`` is ignored
 * ``quotechar``: character used to quote strings, defaults to "
 * ``escapechar``: character used to escape quotechar in strings. (could be the same as quotechar)
-* ``nrows``: number of rows in the file. Defaults to 0 in which case we try to estimate this.
+* ``row_estimate``: estimated number of rows in the file. Defaults to 0 in which case we try to estimate this.
 * ``skiplines_begin``: number of rows to skip at the beginning of the file.
 * ``header_exists``: boolean specifying whether CSV file contains a header
 * ``colnames``: manually specified column names. Could be a vector or a dictionary from Int index (the column) to String column name.

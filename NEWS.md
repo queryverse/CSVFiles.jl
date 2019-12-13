@@ -1,3 +1,6 @@
+# CSVFiles.jl v1.0.0
+* Renamed `nrows` argument to `row_estimate`
+
 # CSVFiles.jl v0.16.1
 * Fix a bug in the write functionality
 * Add proper bounds to all dependencies
