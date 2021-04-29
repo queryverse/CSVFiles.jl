@@ -67,11 +67,13 @@ end
 
 @testset "Less Basic" begin
     array = [(Name="John",Age=34.,Children=2),(Name="Sally",Age=54.,Children=1),(Name="Jim",Age=23.,Children=0)]
-    @testset "remote loading" begin
-        rem_array = collect(load("https://raw.githubusercontent.com/queryverse/CSVFiles.jl/v0.2.0/test/data.csv"))
-        @test length(rem_array) == 3
-        @test rem_array == array
-    end
+
+    @test_broken false # TODO Reenable download test once FileIO is fixed
+    # @testset "remote loading" begin
+    #     rem_array = collect(load("https://raw.githubusercontent.com/queryverse/CSVFiles.jl/v0.2.0/test/data.csv"))
+    #     @test length(rem_array) == 3
+    #     @test rem_array == array
+    # end
 
     @testset "can round trip TSV" begin
         output_filename3 = tempname() * ".tsv"
@@ -107,7 +109,7 @@ end
     @testset "CSV"  begin
         stream = IOBuffer()
         mark(stream)
-        fileiostream = FileIO.Stream(FileIO.format"CSV", stream)
+        fileiostream = FileIO.Stream{FileIO.format"CSV"}(stream)
         save(fileiostream, data)
         reset(stream)
         mark(stream)
@@ -127,7 +129,7 @@ end
     @testset "TSV" begin
         stream = IOBuffer()
         mark(stream)
-        fileiostream = FileIO.Stream(FileIO.format"TSV", stream)
+        fileiostream = FileIO.Stream{FileIO.format"TSV"}(stream)
         save(fileiostream, data)
         reset(stream)
         mark(stream)
@@ -151,8 +153,8 @@ end
     @testset "CSV" begin
         output_filename = "output.csv.gz"
         try
-            save(File(format"CSV", output_filename), data)
-            reloaded_data = collect(load(File(format"CSV", output_filename)))
+            save(File{format"CSV"}(output_filename), data)
+            reloaded_data = collect(load(File{format"CSV"}(output_filename)))
             @test reloaded_data == data
         finally
             rm(output_filename)
@@ -162,8 +164,8 @@ end
     @testset "TSV" begin
         output_filename = "output.tsv.gz"
         try
-            save(File(format"TSV", output_filename), data)
-            reloaded_data = collect(load(File(format"TSV", output_filename)))
+            save(File{format"TSV"}(output_filename), data)
+            reloaded_data = collect(load(File{format"TSV"}(output_filename)))
             @test reloaded_data == data
         finally
             rm(output_filename)
@@ -192,7 +194,7 @@ end
     @test showable("application/vnd.dataresource+json", x) == true
 
     open("data.csv", "r") do f
-        x2 = load(Stream(format"CSV", f))
+        x2 = load(Stream{format"CSV"}(f))
 
         @test sprint(show, x2) == """
     3x3 CSV file
