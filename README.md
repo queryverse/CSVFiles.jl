@@ -57,11 +57,12 @@ plot(load("data.csv"), x=:a, y=:b, Geom.line)
 
 One can load both local files and files that can be downloaded via either http or https. To download
 from a remote URL, simply pass a URL to the ``load`` function instead of just a filename. In addition
-one can also load data from an ``IO`` object, i.e. any stream. The syntax
+one can also load data from an ``IO`` object, i.e. any stream. The syntax for
 that scenario is
 
 ````julia
-df = DataFrame(load(Stream(format"CSV", io)))
+using FileIO
+df = DataFrame(load(File(format"CSV", io)))
 ````
 
 The ``load`` function also takes a number of parameters:
@@ -112,9 +113,9 @@ save(File(format"CSV", "output.csv.gz"), df)
 
 One can also save into an arbitrary stream:
 ````julia
-using CSVFiles
+using CSVFiles, FileIO
 
-save(Stream(format"CSV", io), it)
+save(File(format"CSV", io), it)
 ````
 
 The ``save`` function takes a number of arguments:
