@@ -68,12 +68,11 @@ end
 @testset "Less Basic" begin
     array = [(Name="John",Age=34.,Children=2),(Name="Sally",Age=54.,Children=1),(Name="Jim",Age=23.,Children=0)]
 
-    @test_broken false # TODO Reenable download test once FileIO is fixed
-    # @testset "remote loading" begin
-    #     rem_array = collect(load("https://raw.githubusercontent.com/queryverse/CSVFiles.jl/v0.2.0/test/data.csv"))
-    #     @test length(rem_array) == 3
-    #     @test rem_array == array
-    # end
+    @testset "remote loading" begin
+        rem_array = collect(load("https://raw.githubusercontent.com/queryverse/CSVFiles.jl/v0.2.0/test/data.csv"))
+        @test length(rem_array) == 3
+        @test rem_array == array
+    end
 
     @testset "can round trip TSV" begin
         output_filename3 = tempname() * ".tsv"
