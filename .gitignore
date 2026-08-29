@@ -2,3 +2,7 @@
 *.jl.*.cov
 *.jl.mem
 .vscode
+docs/build/
+docs/Manifest.toml
+test-output*.*
+Manifest.toml
