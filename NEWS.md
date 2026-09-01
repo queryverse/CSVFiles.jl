@@ -1,4 +1,5 @@
 # CSVFiles.jl v1.0.0
+* Implement TableTraits.get_columns_copy: columns come back as plain Vectors, or DataValueArrays for columns with missing values, written directly by the parser via TextParse's new missingarraytype sink (no Union{Missing,T} arrays on this path)
 * Renamed `nrows` argument to `row_estimate`
 
 # CSVFiles.jl v0.16.1

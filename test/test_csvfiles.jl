@@ -245,3 +245,52 @@ end
         rm(fname)
     end
 end
+
+@testitem "get_columns_copy returns DataValue columns" begin
+    using TableTraits, DataValues
+    using FileIO
+
+    mktempdir() do dir
+        # with missing values: DataValueArray columns straight from the parser
+        path = joinpath(dir, "m.csv")
+        write(path, "a,b,c\n1,x,1.5\nNA,y,2.5\n3,z,NA\n")
+        f = load(path)
+        @test TableTraits.supports_get_columns_copy(f)
+        cols = TableTraits.get_columns_copy(f)
+        @test cols isa NamedTuple
+        @test keys(cols) == (:a, :b, :c)
+        @test cols.a isa DataValueArray{Int,1}
+        @test isna(cols.a[2])
+        @test cols.a[1] == DataValue(1)
+        @test cols.b isa Vector{String}
+        @test cols.b == ["x", "y", "z"]
+        @test cols.c isa DataValueArray{Float64,1}
+        @test isna(cols.c[3])
+        @test cols.c[2] == DataValue(2.5)
+
+        # without missing values: plain Vectors
+        path2 = joinpath(dir, "p.csv")
+        write(path2, "a,b\n1,x\n2,y\n")
+        cols2 = TableTraits.get_columns_copy(load(path2))
+        @test cols2.a isa Vector{Int}
+        @test cols2.b isa Vector{String}
+
+        # the _using_missing variant is unchanged
+        cols3 = TableTraits.get_columns_copy_using_missing(load(path))
+        @test eltype(cols3.a) == Union{Missing,Int}
+        @test ismissing(cols3.a[2])
+    end
+end
+
+@testitem "get_columns_copy stream" begin
+    using TableTraits, DataValues
+    using FileIO
+
+    buf = IOBuffer("a,b\n1,x\nNA,y\n")
+    s = load(Stream{format"CSV"}(buf))
+    @test TableTraits.supports_get_columns_copy(s)
+    cols = TableTraits.get_columns_copy(s)
+    @test cols.a isa DataValueArray{Int,1}
+    @test isna(cols.a[2])
+    @test cols.b == ["x", "y"]
+end
