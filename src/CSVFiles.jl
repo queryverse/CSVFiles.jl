@@ -88,20 +88,65 @@ end
 
 IteratorInterfaceExtensions.isiterable(x::CSVFile) = true
 TableTraits.isiterabletable(x::CSVFile) = true
+TableTraits.supports_get_columns_copy(x::CSVFile) = true
 TableTraits.supports_get_columns_copy_using_missing(x::CSVFile) = true
 
 IteratorInterfaceExtensions.isiterable(x::CSVStream) = true
 TableTraits.isiterabletable(x::CSVStream) = true
+TableTraits.supports_get_columns_copy(x::CSVStream) = true
 TableTraits.supports_get_columns_copy_using_missing(x::CSVStream) = true
 
-function _loaddata(file)
+function _loaddata(file; kwargs...)
     if startswith(file.filename, "https://") || startswith(file.filename, "http://")
         response = HTTP.get(file.filename)
         data = String(response.body)
-        return TextParse._csvread(data, file.delim; stringarraytype=Array, file.keywords...)
+        return TextParse._csvread(data, file.delim; stringarraytype=Array, file.keywords..., kwargs...)
     else
-        return csvread(file.filename, file.delim; stringarraytype=Array, file.keywords...)
+        return csvread(file.filename, file.delim; stringarraytype=Array, file.keywords..., kwargs...)
     end
+end
+
+# ---------------------------------------------------------------------------
+# TextParse missing-value sink for DataValueArray: the parser writes
+# DataValue-based columns directly, so no Union{Missing,T} array is ever
+# allocated on this path (see TextParse's `missingarraytype`).
+# ---------------------------------------------------------------------------
+
+TextParse.allocmissing(::Type{DataValueArray}, ::Type{T}, N) where {T} =
+    DataValueArray{T,1}(Vector{T}(undef, N), fill(true, N))
+
+TextParse.setmissing!(col::DataValueArray, i) = (col.isna[i] = true; nothing)
+
+TextParse.ismissingcolumn(::DataValueArray) = true
+
+TextParse.colmatchestype(col::DataValueArray{T,1}, ::Type{S}) where {T,S} =
+    S == Union{Missing,T}
+
+function TextParse.promotemissing(::Type{DataValueArray}, col::Array{Missing}, rowno, ::Type{T}) where {T}
+    S = Base.nonmissingtype(T)
+    S === Any && (S = Missing)
+    return DataValueArray{S,1}(Vector{S}(undef, length(col)), fill(true, length(col)))
+end
+
+function TextParse.promotemissing(::Type{DataValueArray}, col::Vector{S}, rowno, ::Type{T}) where {S,T}
+    VT = Base.nonmissingtype(T)
+    values = Vector{VT}(undef, length(col))
+    isna = fill(true, length(col))
+    for i = 1:rowno
+        values[i] = col[i]
+        isna[i] = false
+    end
+    return DataValueArray{VT,1}(values, isna)
+end
+
+function TextParse.promotemissing(::Type{DataValueArray}, col::DataValueArray{S,1}, rowno, ::Type{T}) where {S,T}
+    VT = Base.nonmissingtype(T)
+    VT === S && return col
+    values = Vector{VT}(undef, length(col.values))
+    for i = 1:rowno
+        col.isna[i] || (values[i] = col.values[i])
+    end
+    return DataValueArray{VT,1}(values, copy(col.isna))
 end
 
 function IteratorInterfaceExtensions.getiterator(file::CSVFile)
@@ -110,6 +155,11 @@ function IteratorInterfaceExtensions.getiterator(file::CSVFile)
     it = TableTraitsUtils.create_tableiterator([i for i in res[1]], [Symbol(i) for i in res[2]])
 
     return it
+end
+
+function TableTraits.get_columns_copy(file::CSVFile)
+    columns, colnames = _loaddata(file; missingarraytype=DataValueArray)
+    return NamedTuple{(Symbol.(colnames)...,), Tuple{typeof.(columns)...}}((columns...,))
 end
 
 function TableTraits.get_columns_copy_using_missing(file::CSVFile)
@@ -123,6 +173,11 @@ function IteratorInterfaceExtensions.getiterator(s::CSVStream)
     it = TableTraitsUtils.create_tableiterator([i for i in res[1]], [Symbol(i) for i in res[2]])
 
     return it
+end
+
+function TableTraits.get_columns_copy(s::CSVStream)
+    columns, colnames = TextParse.csvread(s.io, s.delim; stringarraytype=Array, s.keywords..., missingarraytype=DataValueArray)
+    return NamedTuple{(Symbol.(colnames)...,), Tuple{typeof.(columns)...}}((columns...,))
 end
 
 function TableTraits.get_columns_copy_using_missing(s::CSVStream)
